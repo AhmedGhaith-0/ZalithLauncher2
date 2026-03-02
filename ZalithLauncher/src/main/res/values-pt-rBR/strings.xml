@@ -178,7 +178,7 @@
     <string name="download_install_error_jvm_crash">Ocorreu uma exceção durante a instalação, código de saída: %s</string>
     <string name="download_install_error_download_failed">Alguns arquivos não puderam ser baixados, possivelmente devido a problemas de rede.</string>
     <string name="download_install_success_title">Instalação bem-sucedida</string>
-    <string name="download_install_success_message">Tá feito irmão, agora é só ir jogar!</string>
+    <string name="download_install_success_message">Tá feito irmão, agora é só configurar certin e partir pro jogo!</string>
     <string name="download_install_clear_temp">Limpar arquivos de cache</string>
     <string name="download_install_input_version_name">Aguardando o usuário inserir o nome da versão</string>
     <string name="download_install_input_version_name_title">Digite o nome da versão pré-instalada</string>
