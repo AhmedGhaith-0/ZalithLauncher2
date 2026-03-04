@@ -378,7 +378,7 @@ fun ExportInfoScreen(
 
                     //对于打包远端资源的提示
                     AnimatedVisibility(
-                        visible = info.packRemote
+                        visible = info.packType.options.requirePackRemote && info.packRemote
                     ) {
                         Column(
                             modifier = Modifier.fillMaxWidth()

@@ -133,8 +133,7 @@ fun ExportTypeSelectScreen(
 
                     //Modrinth
                     TypeItem(
-                        modifier = Modifier
-                            .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
+                        modifier = Modifier.fillMaxWidth(),
                         position = CardPosition.Middle,
                         title = stringResource(R.string.versions_export_type_modrinth),
                         summary = stringResource(R.string.versions_export_type_modrinth_summary),
@@ -144,8 +143,7 @@ fun ExportTypeSelectScreen(
 
                     //MultiMC
                     TypeItem(
-                        modifier = Modifier
-                            .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
+                        modifier = Modifier.fillMaxWidth(),
                         position = CardPosition.Bottom,
                         title = stringResource(R.string.versions_export_type_multimc),
                         summary = stringResource(R.string.versions_export_type_multimc_summary, InfoDistributor.LAUNCHER_SHORT_NAME),
