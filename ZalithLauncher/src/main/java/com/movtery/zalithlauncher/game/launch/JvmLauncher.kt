@@ -43,8 +43,9 @@ import java.io.IOException
 open class JvmLauncher(
     private val context: Context,
     private val jvmLaunchInfo: JvmLaunchInfo,
-    onExit: (code: Int, isSignal: Boolean) -> Unit
-) : Launcher(onExit) {
+    onExit: (code: Int, isSignal: Boolean) -> Unit,
+    openPath: (folder: File) -> Unit
+) : Launcher(onExit, openPath) {
     override fun exit() {
 
     }

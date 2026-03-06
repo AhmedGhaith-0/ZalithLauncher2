@@ -54,6 +54,10 @@
     <string name="generic_copied">Copied</string>
     <string name="generic_no_matching_items">No matching items</string>
     <string name="generic_follow_system">Follow System</string>
+    <!-- Files -->
+    <string name="files_browse_folder">Browse Folder</string>
+    <string name="files_importing">Importing Files</string>
+    <string name="files_delete_file">Are you sure you want to delete %s?</string>
     <!-- Unit -->
     <string name="unit_day">day</string>
     <string name="date_format">MMM d, yyyy, h:mm:ss a</string>

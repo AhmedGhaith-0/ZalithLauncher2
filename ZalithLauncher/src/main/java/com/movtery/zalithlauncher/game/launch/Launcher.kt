@@ -53,7 +53,8 @@ import java.util.Locale
 import java.util.TimeZone
 
 abstract class Launcher(
-    val onExit: (code: Int, isSignal: Boolean) -> Unit
+    val onExit: (code: Int, isSignal: Boolean) -> Unit,
+    val openPath: (folder: File) -> Unit
 ) {
     lateinit var runtime: Runtime
         protected set

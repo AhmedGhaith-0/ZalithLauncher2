@@ -122,7 +122,8 @@ class JvmService : Service() {
         val launcher = JvmLauncher(
             context = applicationContext,
             jvmLaunchInfo = jvmLaunchInfo,
-            onExit = onExit
+            onExit = onExit,
+            openPath = { /* 忽略 */ }
         )
 
         runJvm(launcher, onExit)

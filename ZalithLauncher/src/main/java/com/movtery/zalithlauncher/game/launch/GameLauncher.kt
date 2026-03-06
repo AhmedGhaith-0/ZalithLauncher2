@@ -64,8 +64,9 @@ import javax.microedition.khronos.egl.EGLContext
 class GameLauncher(
     private val activity: Activity,
     private val version: Version,
-    onExit: (code: Int, isSignal: Boolean) -> Unit
-) : Launcher(onExit) {
+    onExit: (code: Int, isSignal: Boolean) -> Unit,
+    openPath: (folder: File) -> Unit
+) : Launcher(onExit, openPath) {
     private lateinit var gameManifest: GameManifest
     private val offlineServer = OfflineYggdrasilServer(0)
 

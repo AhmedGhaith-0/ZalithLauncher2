@@ -51,6 +51,10 @@
     <string name="generic_copied">已複製</string>
     <string name="generic_no_matching_items">沒有符合條件的項目</string>
     <string name="generic_follow_system">跟隨系統</string>
+    <!--  資料  -->
+    <string name="files_browse_folder">瀏覽資料夾</string>
+    <string name="files_importing">正在匯入檔案</string>
+    <string name="files_delete_file">您確定要刪除 %s 嗎？</string>
     <!--  单位  -->
     <string name="unit_day">天</string>
     <string name="date_format">yyyy \'年\' MM \'月\' dd \'日\' HH:mm:ss</string>

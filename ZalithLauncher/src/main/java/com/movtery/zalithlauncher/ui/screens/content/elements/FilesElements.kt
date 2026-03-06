@@ -18,9 +18,11 @@
 
 package com.movtery.zalithlauncher.ui.screens.content.elements
 
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Description
@@ -39,6 +41,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.movtery.zalithlauncher.R
+import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.components.SimpleEditDialog
 import com.movtery.zalithlauncher.utils.file.InvalidFilenameException
 import com.movtery.zalithlauncher.utils.file.checkFilenameValidity
@@ -51,25 +54,31 @@ import java.util.Date
 @Composable
 fun BaseFileItem(
     file: File,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    suffix: (@Composable RowScope.() -> Unit)? = null
 ) {
     if (!file.exists()) throw IllegalArgumentException("File is not exists!")
 
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             modifier = Modifier.size(24.dp).align(Alignment.CenterVertically),
             imageVector = if (file.isDirectory) Icons.Outlined.Folder else Icons.Outlined.Description,
             contentDescription = null
         )
-        Column(modifier = Modifier.align(Alignment.CenterVertically)) {
-            Text(
+        Column(
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            MarqueeText(
                 text = file.name,
                 style = MaterialTheme.typography.labelMedium
             )
             Row(
+                modifier = Modifier.basicMarquee(Int.MAX_VALUE),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 val date = Date(file.lastModified())
@@ -89,6 +98,8 @@ fun BaseFileItem(
                 }
             }
         }
+
+        suffix?.invoke(this@Row)
     }
 }
 

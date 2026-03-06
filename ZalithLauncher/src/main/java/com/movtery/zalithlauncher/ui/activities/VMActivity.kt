@@ -86,6 +86,8 @@ import com.movtery.zalithlauncher.ui.base.WindowMode
 import com.movtery.zalithlauncher.ui.components.rememberBoxSize
 import com.movtery.zalithlauncher.ui.control.input.TextInputMode
 import com.movtery.zalithlauncher.ui.screens.game.elements.InputMode
+import com.movtery.zalithlauncher.ui.screens.game.elements.OpenFolderLayer
+import com.movtery.zalithlauncher.ui.screens.game.elements.OpenFolderOperation
 import com.movtery.zalithlauncher.ui.screens.game.elements.TextInputBar
 import com.movtery.zalithlauncher.ui.screens.game.elements.TextInputBarArea
 import com.movtery.zalithlauncher.ui.theme.ZalithLauncherTheme
@@ -137,6 +139,17 @@ class VMViewModel : ViewModel() {
     val inputProxy = GameInputProxy(LWJGLCharSender)
     val inputTextFieldState = TextFieldState()
 
+    private val _openFolderOperation = MutableStateFlow<OpenFolderOperation>(OpenFolderOperation.None)
+    /** 启动器内浏览目录（将文件导入该目录） */
+    val openFolderOperation = _openFolderOperation.asStateFlow()
+
+    /** 关闭浏览目录 */
+    fun clearFolder() {
+        _openFolderOperation.update {
+            OpenFolderOperation.None
+        }
+    }
+
     private var _session: LaunchSession? = null
     val session: LaunchSession
         get() = _session ?: error("LaunchSession not initialized")
@@ -147,7 +160,7 @@ class VMViewModel : ViewModel() {
         errorViewModel: ErrorViewModel,
         eventViewModel: EventViewModel,
         gamepadViewModel: GamepadViewModel,
-        exitListener: (Int, Boolean) -> Unit
+        exitListener: (Int, Boolean) -> Unit,
     ) {
         if (_session != null) return
 
@@ -167,6 +180,11 @@ class VMViewModel : ViewModel() {
                             }
                         }
                         exitListener(code, isSignal)
+                    },
+                    openPath = { folder ->
+                        _openFolderOperation.update {
+                            OpenFolderOperation.OpenFolder(folder)
+                        }
                     }
                 )
 
@@ -194,7 +212,12 @@ class VMViewModel : ViewModel() {
                 val launcher = JvmLauncher(
                     context = activity,
                     jvmLaunchInfo = jvmLaunchInfo,
-                    onExit = exitListener
+                    onExit = exitListener,
+                    openPath = { folder ->
+                        _openFolderOperation.update {
+                            OpenFolderOperation.OpenFolder(folder)
+                        }
+                    }
                 )
 
                 inputProxy.sender = AWTCharSender
@@ -472,6 +495,16 @@ class VMActivity : BaseAppCompatActivity(), SurfaceTextureListener {
                     LaunchedEffect(cursorMode) {
                         if (cursorMode == CURSOR_DISABLED) vmViewModel.disableInputMode()
                     }
+
+                    val operation by vmViewModel.openFolderOperation.collectAsStateWithLifecycle()
+                    OpenFolderLayer(
+                        modifier = Modifier.fillMaxSize(),
+                        operation = operation,
+                        requestClose = {
+                            vmViewModel.clearFolder()
+                        },
+                        lifecycleScope = lifecycleScope
+                    )
                 }
             }
         }
