@@ -136,9 +136,19 @@ fun ExportTypeSelectScreen(
                         modifier = Modifier.fillMaxWidth(),
                         position = CardPosition.Middle,
                         title = stringResource(R.string.versions_export_type_modrinth),
-                        summary = stringResource(R.string.versions_export_type_modrinth_summary),
+                        summary = stringResource(R.string.versions_export_type_summary_common),
                         icon = painterResource(R.drawable.img_platform_modrinth),
                         onClick = { onTypeSelect(PackType.Modrinth) }
+                    )
+
+                    //CurseForge
+                    TypeItem(
+                        modifier = Modifier.fillMaxWidth(),
+                        position = CardPosition.Middle,
+                        title = stringResource(R.string.versions_export_type_curseforge),
+                        summary = stringResource(R.string.versions_export_type_summary_common),
+                        icon = painterResource(R.drawable.img_platform_curseforge),
+                        onClick = { onTypeSelect(PackType.CurseForge) }
                     )
 
                     //MultiMC
@@ -185,7 +195,7 @@ private fun TypeItem(
         ) {
             //图标
             Image(
-                modifier = Modifier.size(32.dp),
+                modifier = Modifier.size(28.dp),
                 painter = icon,
                 contentDescription = title,
                 contentScale = ContentScale.FillBounds

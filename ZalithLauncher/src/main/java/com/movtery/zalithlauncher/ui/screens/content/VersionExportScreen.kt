@@ -174,14 +174,20 @@ private class ExportModpackViewModel(
 
     private fun defaultInfo(
         packType: PackType = PackType.Modrinth
-    ): ExportInfo = ExportInfo(
-        gamePath = gamePath,
-        name = versionName,
-        version = "1.0",
-        mcVersion = mcVersion,
-        loader = loader,
-        packType = packType
-    )
+    ): ExportInfo {
+        val packModrinth = packType == PackType.Modrinth
+        val packCurseForge = packType == PackType.Modrinth || packType == PackType.CurseForge
+        return ExportInfo(
+            gamePath = gamePath,
+            name = versionName,
+            version = "1.0",
+            mcVersion = mcVersion,
+            loader = loader,
+            packType = packType,
+            packModrinth = packModrinth,
+            packCurseForge = packCurseForge
+        )
+    }
 
     private val _packExportOperation = MutableStateFlow<PackExportOperation>(PackExportOperation.None)
     val packExportOperation = _packExportOperation.asStateFlow()

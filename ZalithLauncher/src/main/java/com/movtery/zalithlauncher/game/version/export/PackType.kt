@@ -26,42 +26,90 @@ enum class PackType(val options: PackEditOptions) {
      * MCBBS 导出格式
      */
     MCBBS(
-        PackEditOptions(
-            requireAuthor = true,
-            requireJvmArgs = true,
-            requireJavaArgs = true,
-            requireWebsiteUrl = true,
-            requireMinMemory = true,
-        )
+        PackEditOptions.Builder()
+            .requireAuthor()
+            .requireSummary()
+            .requireJvmArgs()
+            .requireJavaArgs()
+            .requireWebsiteUrl()
+            .requireMinMemory()
+            .build()
     ),
 
     /**
      * Modrinth 标准导出格式
      */
     Modrinth(
-        PackEditOptions(
-            requirePackRemote = true,
-        )
+        PackEditOptions.Builder()
+            .requireSummary()
+            .requirePackModrinth()
+            .requirePackCurseForge()
+            .build()
+    ),
+
+    CurseForge(
+        PackEditOptions.Builder()
+            .requireAuthor()
+            .requirePackCurseForge()
+            .requireMinMemory()
+            .build()
     ),
 
     /**
      * MultiMC 导出格式
      */
     MultiMC(
-        PackEditOptions(
-            requireAuthor = true,
-            requireMinMemory = true,
-            requireMaxMemory = true,
-        )
+        PackEditOptions.Builder()
+            .requireAuthor()
+            .requireSummary()
+            .requireMinMemory()
+            .requireMaxMemory()
+            .build()
     ),
 }
 
-data class PackEditOptions(
+class PackEditOptions private constructor(
     val requireAuthor: Boolean = false,
+    val requireSummary: Boolean = false,
     val requireJvmArgs: Boolean = false,
     val requireJavaArgs: Boolean = false,
     val requireWebsiteUrl: Boolean = false,
     val requireMinMemory: Boolean = false,
     val requireMaxMemory: Boolean = false,
-    val requirePackRemote: Boolean = false
-)
+    val requirePackModrinth: Boolean = false,
+    val requirePackCurseForge: Boolean = false
+) {
+    class Builder {
+        private var requireAuthor: Boolean = false
+        private var requireSummary: Boolean = false
+        private var requireJvmArgs: Boolean = false
+        private var requireJavaArgs: Boolean = false
+        private var requireWebsiteUrl: Boolean = false
+        private var requireMinMemory: Boolean = false
+        private var requireMaxMemory: Boolean = false
+        private var requirePackModrinth: Boolean = false
+        private var requirePackCurseForge: Boolean = false
+
+        fun requireAuthor() = this.also { requireAuthor = true }
+        fun requireSummary() = this.also { requireSummary = true }
+        fun requireJvmArgs() = this.also { requireJvmArgs = true }
+        fun requireJavaArgs() = this.also { requireJavaArgs = true }
+        fun requireWebsiteUrl() = this.also { requireWebsiteUrl = true }
+        fun requireMinMemory() = this.also { requireMinMemory = true }
+        fun requireMaxMemory() = this.also { requireMaxMemory = true }
+        fun requirePackModrinth() = this.also { requirePackModrinth = true }
+        fun requirePackCurseForge() = this.also { requirePackCurseForge = true }
+
+        fun build() = PackEditOptions(
+            requireAuthor = requireAuthor,
+            requireSummary = requireSummary,
+            requireJvmArgs = requireJvmArgs,
+            requireJavaArgs = requireJavaArgs,
+            requireWebsiteUrl = requireWebsiteUrl,
+            requireMinMemory = requireMinMemory,
+            requireMaxMemory = requireMaxMemory,
+            requirePackModrinth = requirePackModrinth,
+            requirePackCurseForge = requirePackCurseForge
+        )
+    }
+}

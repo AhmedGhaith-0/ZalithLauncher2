@@ -29,6 +29,7 @@ import com.movtery.zalithlauncher.coroutine.TaskFlowExecutor
 import com.movtery.zalithlauncher.coroutine.TitledTask
 import com.movtery.zalithlauncher.coroutine.addTask
 import com.movtery.zalithlauncher.coroutine.buildPhase
+import com.movtery.zalithlauncher.game.version.export.platform.CurseForgePackExporter
 import com.movtery.zalithlauncher.game.version.export.platform.MCBBSPackExporter
 import com.movtery.zalithlauncher.game.version.export.platform.ModrinthPackExporter
 import com.movtery.zalithlauncher.game.version.export.platform.MultiMCPackExporter
@@ -60,6 +61,7 @@ class PackExporter(
     private val exporter: AbstractExporter = when (exportInfo.packType) {
         PackType.MCBBS -> MCBBSPackExporter()
         PackType.Modrinth -> ModrinthPackExporter()
+        PackType.CurseForge -> CurseForgePackExporter()
         PackType.MultiMC -> MultiMCPackExporter()
     }
 

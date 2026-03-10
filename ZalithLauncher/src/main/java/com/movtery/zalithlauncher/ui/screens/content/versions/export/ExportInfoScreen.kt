@@ -52,6 +52,7 @@ import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.download.assets.platform.Platform
 import com.movtery.zalithlauncher.game.version.export.ExportInfo
 import com.movtery.zalithlauncher.game.version.export.PackEditOptions
+import com.movtery.zalithlauncher.game.version.export.PackType
 import com.movtery.zalithlauncher.ui.base.BaseScreen
 import com.movtery.zalithlauncher.ui.components.AnimatedLazyColumn
 import com.movtery.zalithlauncher.ui.components.WarningCard
@@ -73,7 +74,8 @@ private const val OPTIONAL_JAVA_ARGS = "requireJavaArgs"
 private const val OPTIONAL_WEBSITE_URL = "requireWebsiteUrl"
 private const val OPTIONAL_MIN_MEMORY = "requireMinMemory"
 private const val OPTIONAL_MAX_MEMORY = "requireMaxMemory"
-private const val OPTIONAL_PACK_REMOTE = "requirePackRemote"
+private const val OPTIONAL_PACK_MODRINTH = "requirePackModrinth"
+private const val OPTIONAL_PACK_CURSEFORGE = "requirePackCurseForge"
 
 @Composable
 private fun rememberOptionalItemIDList(
@@ -82,13 +84,14 @@ private fun rememberOptionalItemIDList(
     return remember(options) {
         buildList {
             if (options.requireAuthor) add(OPTIONAL_AUTHOR)
-            add(OPTION_DESCRIPTION)
+            if (options.requireSummary) add(OPTION_DESCRIPTION)
             if (options.requireJvmArgs) add(OPTIONAL_JVM_ARGS)
             if (options.requireJavaArgs) add(OPTIONAL_JAVA_ARGS)
             if (options.requireWebsiteUrl) add(OPTIONAL_WEBSITE_URL)
             if (options.requireMinMemory) add(OPTIONAL_MIN_MEMORY)
             if (options.requireMaxMemory) add(OPTIONAL_MAX_MEMORY)
-            if (options.requirePackRemote) add(OPTIONAL_PACK_REMOTE)
+            if (options.requirePackModrinth) add(OPTIONAL_PACK_MODRINTH)
+            if (options.requirePackCurseForge) add(OPTIONAL_PACK_CURSEFORGE)
         }
     }
 }
@@ -149,8 +152,11 @@ fun ExportInfoScreen(
                         position = CardPosition.TopStart,
                         title = stringResource(R.string.versions_export_pack_name),
                         value = info.name,
-                        onValueChange = {
-                            onInfoEdited(info.copy(name = it.toSingleLine()))
+                        onValueChange = { newName ->
+                            val safeName = newName
+                                .toSingleLine()
+                                .replace("[\\\\\"?:*/<>|]".toRegex(), "")
+                            onInfoEdited(info.copy(name = safeName))
                         },
                         isError = isNameEmpty,
                         supportingText = if (isNameEmpty) {
@@ -205,25 +211,27 @@ fun ExportInfoScreen(
                 }
             }
 
-            animatedItem(scope) { yOffset ->
-                TextInputSettingsCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
-                    position = optionalItemIDs.rememberCardPosition(OPTION_DESCRIPTION),
-                    title = stringResource(R.string.versions_export_pack_summary),
-                    value = info.summary ?: "",
-                    onValueChange = { new ->
-                        onInfoEdited(
-                            info.copy(summary = new.takeIf { it.isNotEmptyOrBlank() })
-                        )
-                    },
-                    supportingText = {
-                        Text(text = stringResource(R.string.versions_export_pack_summary_hint))
-                    },
-                    minLines = 3,
-                    singleLine = false
-                )
+            if (info.packType.options.requireSummary) {
+                animatedItem(scope) { yOffset ->
+                    TextInputSettingsCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
+                        position = optionalItemIDs.rememberCardPosition(OPTION_DESCRIPTION),
+                        title = stringResource(R.string.versions_export_pack_summary),
+                        value = info.summary ?: "",
+                        onValueChange = { new ->
+                            onInfoEdited(
+                                info.copy(summary = new.takeIf { it.isNotEmptyOrBlank() })
+                            )
+                        },
+                        supportingText = {
+                            Text(text = stringResource(R.string.versions_export_pack_summary_hint))
+                        },
+                        minLines = 3,
+                        singleLine = false
+                    )
+                }
             }
 
             if (info.packType.options.requireJvmArgs) {
@@ -334,35 +342,52 @@ fun ExportInfoScreen(
                 }
             }
 
-            if (info.packType.options.requirePackRemote) {
-                //是否打包远程资源
+            if (info.packType.options.requirePackModrinth) {
+                //是否打包 Modrinth 的远程资源
                 animatedItem(scope) { yOffset ->
                     SwitchSettingsCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
                         position = CardPosition.Middle,
-                        title = stringResource(R.string.versions_export_pack_pack_remote),
-                        checked = info.packRemote,
+                        title = stringResource(
+                            id = R.string.versions_export_pack_pack_remote,
+                            Platform.MODRINTH.displayName
+                        ),
+                        checked = info.packModrinth,
                         onCheckedChange = {
-                            onInfoEdited(info.copy(packRemote = it))
+                            onInfoEdited(info.copy(packModrinth = it))
                         }
                     )
                 }
+            }
 
+            if (info.packType.options.requirePackCurseForge) {
                 //是否打包 CurseForge 的远程资源
                 animatedItem(scope) { yOffset ->
+                    val enabled = remember(info) {
+                        info.packType == PackType.CurseForge ||
+                                (info.packType == PackType.Modrinth && info.packModrinth)
+                    }
+                    val alsoText = stringResource(R.string.versions_export_pack_also_pack_curseforge)
+                    val packText = stringResource(
+                        id = R.string.versions_export_pack_pack_remote,
+                        Platform.CURSEFORGE.displayName
+                    )
+                    val finalText = remember(info) {
+                        if (info.packType == PackType.Modrinth) alsoText else packText
+                    }
                     SwitchSettingsCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .offset { IntOffset(x = 0, y = yOffset.roundToPx()) },
-                        position = CardPosition.Bottom,
-                        title = stringResource(R.string.versions_export_pack_pack_curseforge),
+                        position = optionalItemIDs.rememberCardPosition(OPTIONAL_PACK_CURSEFORGE),
+                        title = finalText,
                         checked = info.packCurseForge,
                         onCheckedChange = {
                             onInfoEdited(info.copy(packCurseForge = it))
                         },
-                        enabled = info.packRemote
+                        enabled = enabled
                     )
                 }
             }
@@ -376,9 +401,17 @@ fun ExportInfoScreen(
                 ) {
                     Spacer(Modifier.height(8.dp))
 
+                    val packRemote = remember(info) {
+                        when (info.packType) {
+                            PackType.Modrinth -> info.packModrinth
+                            PackType.CurseForge -> info.packCurseForge
+                            else -> false
+                        }
+                    }
+
                     //对于打包远端资源的提示
                     AnimatedVisibility(
-                        visible = info.packType.options.requirePackRemote && info.packRemote
+                        visible = packRemote
                     ) {
                         Column(
                             modifier = Modifier.fillMaxWidth()
@@ -395,23 +428,22 @@ fun ExportInfoScreen(
                                 },
                                 text = {
                                     val platformText = remember(info) {
-                                        val currentPlatform = info.packType.name
-                                        if (info.packCurseForge) {
-                                            "$currentPlatform ${Platform.CURSEFORGE.displayName}"
-                                        } else {
-                                            currentPlatform
-                                        }
+                                        buildList {
+                                            if (info.packModrinth) add(Platform.MODRINTH.displayName)
+                                            if (info.packCurseForge) add(Platform.CURSEFORGE.displayName)
+                                        }.joinToString(" ")
                                     }
 
                                     Text(
                                         text = stringResource(R.string.versions_export_tip_remote_1, platformText),
                                         style = MaterialTheme.typography.bodySmall
                                     )
-
-                                    Text(
-                                        text = stringResource(R.string.versions_export_tip_remote_2),
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
+                                    if (info.packType == PackType.Modrinth) {
+                                        Text(
+                                            text = stringResource(R.string.versions_export_tip_remote_2),
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
                                 }
                             )
 

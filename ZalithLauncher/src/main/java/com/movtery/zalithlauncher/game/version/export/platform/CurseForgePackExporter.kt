@@ -26,35 +26,27 @@ import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.coroutine.TitledTask
 import com.movtery.zalithlauncher.coroutine.addTask
 import com.movtery.zalithlauncher.game.addons.modloader.ModLoader
-import com.movtery.zalithlauncher.game.download.assets.platform.curseforge.models.fixedFileUrl
+import com.movtery.zalithlauncher.game.download.assets.platform.curseforge.models.CurseForgeData
 import com.movtery.zalithlauncher.game.download.assets.platform.mirroredCurseForgeSource
-import com.movtery.zalithlauncher.game.download.assets.platform.mirroredModrinthSource
 import com.movtery.zalithlauncher.game.download.assets.platform.mirroredPlatformSearcher
-import com.movtery.zalithlauncher.game.download.assets.platform.modrinth.models.getPrimary
-import com.movtery.zalithlauncher.game.download.modpack.platform.modrinth.ModrinthManifest
+import com.movtery.zalithlauncher.game.download.modpack.platform.curseforge.CurseForgeManifest
 import com.movtery.zalithlauncher.game.version.export.AbstractExporter
 import com.movtery.zalithlauncher.game.version.export.ExportInfo
 import com.movtery.zalithlauncher.game.version.export.PackType
 import com.movtery.zalithlauncher.game.version.installed.Version
-import com.movtery.zalithlauncher.game.version.mod.enabledMod
 import com.movtery.zalithlauncher.game.version.mod.isDisabled
 import com.movtery.zalithlauncher.utils.GSON
 import com.movtery.zalithlauncher.utils.logging.Logger.lWarning
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import org.jackhuang.hmcl.util.DigestUtils
 import java.io.File
-import java.nio.file.Files
 
-/**
- * Modrinth 整合包导出工具
- */
-class ModrinthPackExporter: AbstractExporter(
-    type = PackType.Modrinth
+class CurseForgePackExporter: AbstractExporter(
+    type = PackType.CurseForge
 ) {
-    private val files = mutableListOf<ModrinthManifest.ManifestFile>()
+    private val files = mutableListOf<CurseForgeManifest.ManifestFile>()
+    private val remoteMods = mutableListOf<CurseForgeData>()
     private val filesInManifest = mutableListOf<File>()
 
     override fun MutableList<TitledTask>.buildTasks(
@@ -63,15 +55,14 @@ class ModrinthPackExporter: AbstractExporter(
         info: ExportInfo,
         tempPath: File
     ) {
-        if (info.packModrinth) {
+        if (info.packCurseForge) {
             addTask(
-                id = "ModrinthPackExporter.FetchRemote",
+                id = "CurseForgePackExporter.FetchRemote",
                 title = context.getString(R.string.versions_export_task_fetch_remote),
                 icon = Icons.Default.Search
             ) { task ->
                 //获取远端数据
                 packRemote(
-                    packCurseForge = info.packCurseForge,
                     gamePath = info.gamePath,
                     selectedFiles = info.selectedFiles,
                     onProgress = { file ->
@@ -86,7 +77,7 @@ class ModrinthPackExporter: AbstractExporter(
         }
 
         addTask(
-            id = "ModrinthPackExporter.PackManifest",
+            id = "CurseForgePackExporter.PackManifest",
             title = context.getString(R.string.versions_export_task_pack_manifest),
             icon = Icons.Default.Build
         ) {
@@ -96,7 +87,7 @@ class ModrinthPackExporter: AbstractExporter(
                 File(info.gamePath, "$gameName.jar")
             )
 
-            val override = File(tempPath, "client-overrides")
+            val override = File(tempPath, "overrides")
             info.selectedFiles.forEach { file ->
                 if (file !in filesInManifest && file !in blackList) {
                     val targetFile = generateTargetRoot(
@@ -108,43 +99,49 @@ class ModrinthPackExporter: AbstractExporter(
                 }
             }
 
-            val dependencies = buildMap {
-                put("minecraft", info.mcVersion)
-
+            val loaders = buildList {
                 info.loader?.let { loader ->
                     val identifier = when (loader.loader) {
                         ModLoader.FORGE -> "forge"
                         ModLoader.NEOFORGE -> "neoforge"
-                        ModLoader.FABRIC -> "fabric-loader"
-                        ModLoader.QUILT -> "quilt-loader"
+                        ModLoader.FABRIC -> "fabric"
+                        ModLoader.QUILT -> "quilt"
                         else -> null
                     } ?: return@let
-                    put(identifier, loader.version)
+                    add(
+                        CurseForgeManifest.Minecraft.ModLoader(
+                            id = "$identifier-${loader.version}",
+                            primary = true
+                        )
+                    )
                 }
             }
 
-            val manifest = ModrinthManifest(
-                game = "minecraft",
-                formatVersion = 1,
-                versionId = info.version,
+            val manifest = CurseForgeManifest(
+                manifestType = "minecraftModpack",
+                manifestVersion = 1,
                 name = info.name,
-                summary = info.summary,
-                files = files.toTypedArray(),
-                dependencies = dependencies
+                version = info.version,
+                author = info.author,
+                overrides = "overrides",
+                minecraft = CurseForgeManifest.Minecraft(
+                    gameVersion = info.mcVersion,
+                    modLoaders = loaders,
+                    recommendedRam = info.minMemory.takeIf { it > 0 }
+                ),
+                files = files
             )
 
-            val index = File(tempPath, "modrinth.index.json")
+            val manifestFile = File(tempPath, "manifest.json")
             val jsonString = GSON.toJson(manifest)
             //写入整合包清单信息
-            index.writeText(jsonString)
+            manifestFile.writeText(jsonString)
+
+            writeModList(tempPath)
         }
     }
 
-    override val fileSuffix: String
-        get() = "mrpack"
-
     private suspend fun packRemote(
-        packCurseForge: Boolean,
         gamePath: File,
         selectedFiles: List<File>,
         onProgress: (File?) -> Unit,
@@ -155,66 +152,37 @@ class ModrinthPackExporter: AbstractExporter(
                 resourceDir.listFiles()?.forEach { file ->
                     if (file in selectedFiles) {
                         onProgress(file)
+                        if (file.isDisabled()) return@forEach
 
-                        val inManifest = runCatching {
+                        runCatching {
                             val path = file.toPath()
 
-                            val sha1 = DigestUtils.digestToString("SHA-1", path)
-                            val sha512 = DigestUtils.digestToString("SHA-512", path)
+                            val modFile = mirroredPlatformSearcher(
+                                searchers = mirroredCurseForgeSource()
+                            ) { searcher ->
+                                val sha1 = DigestUtils.digestToString("SHA-1", path)
+                                searcher.getVersionByLocalFile(file, sha1)
+                            }?.takeIf { mod ->
+                                mod.isAvailable
+                            } ?: return@runCatching
 
-                            val modrinthDeferred = async(Dispatchers.IO) {
-                                val version = runCatching {
-                                    mirroredPlatformSearcher(
-                                        searchers = mirroredModrinthSource()
-                                    ) { searcher ->
-                                        searcher.getVersionByLocalFile(file, sha1)
-                                    }
-                                }.getOrNull() ?: return@async null
+                            val project = mirroredPlatformSearcher(
+                                searchers = mirroredCurseForgeSource()
+                            ) { searcher ->
+                                searcher.getProject(modFile.modId.toString())
+                            }.data
 
-                                val modrinthFile = version.files.getPrimary() ?: return@async null
-                                modrinthFile.url
-                            }
-
-                            val curseForgeDeferred = async(Dispatchers.IO) {
-                                val version = runCatching {
-                                    mirroredPlatformSearcher(
-                                        searchers = mirroredCurseForgeSource()
-                                    ) { searcher ->
-                                        searcher.getVersionByLocalFile(file, sha1)
-                                    }
-                                }.getOrNull() ?: return@async null
-
-                                version.fixedFileUrl() ?: return@async null
-                            }
-
-                            val links = listOfNotNull(
-                                modrinthDeferred,
-                                curseForgeDeferred.takeIf { packCurseForge }
-                            ).awaitAll().filterNotNull().takeIf {
-                                it.isNotEmpty()
-                            } ?: return@runCatching false
-
-                            val resourceFile = ModrinthManifest.ManifestFile(
-                                path = relativePath(
-                                    file = enabledMod(file),
-                                    rootPath = gamePath.absolutePath
-                                ),
-                                hashes = ModrinthManifest.ManifestFile.Hashes(sha1, sha512),
-                                env = if (file.isDisabled()) {
-                                    ModrinthManifest.ManifestFile.Env(client = "optional")
-                                } else null,
-                                downloads = links.toTypedArray(),
-                                fileSize = Files.size(path)
+                            files.add(
+                                CurseForgeManifest.ManifestFile(
+                                    projectID = modFile.modId,
+                                    fileID = modFile.id,
+                                    required = true
+                                )
                             )
-
-                            files.add(resourceFile)
-                            true
+                            remoteMods.add(project)
+                            filesInManifest.add(file)
                         }.onFailure {
                             lWarning("Failed to obtain remote data for ${file.name}!", it)
-                        }.getOrDefault(false)
-
-                        if (inManifest) {
-                            filesInManifest.add(file)
                         }
                     }
 
@@ -223,4 +191,35 @@ class ModrinthPackExporter: AbstractExporter(
             }
         }
     }
+
+    private suspend fun writeModList(tempPath: File) {
+        val modListFile = File(tempPath, "modlist.html")
+        withContext(Dispatchers.IO) {
+            if (remoteMods.isNotEmpty()) {
+                val modListHtml = buildString {
+                    append("<ul>")
+                    append("\n")
+                    remoteMods.forEach { data ->
+                        if (data.links.websiteUrl != null) {
+                            append("<li><a href=\"")
+                            append(data.links.websiteUrl)
+                            append("\">")
+
+                            append(data.name)
+                            append("</a></li>")
+                            append("\n")
+                        }
+                    }
+                    append("</ul>")
+                }
+                modListFile.writeText(modListHtml)
+            } else {
+                //默认创建一个空文件
+                modListFile.createNewFile()
+            }
+        }
+    }
+
+    override val fileSuffix: String
+        get() = "zip"
 }

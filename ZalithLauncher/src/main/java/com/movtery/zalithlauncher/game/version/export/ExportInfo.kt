@@ -38,7 +38,7 @@ import java.io.File
  * @param url 整合包官方网站
  * @param forceUpdate 强制更新整合包
  * @param packType 导出整合包的类型
- * @param packRemote 是否打包远程资源
+ * @param packModrinth 是否打包Modrinth的远程资源
  * @param packCurseForge 是否打包CurseForge的远程资源
  */
 data class ExportInfo(
@@ -58,8 +58,8 @@ data class ExportInfo(
     val url: String = "",
     val forceUpdate: Boolean = false,
     val packType: PackType = PackType.Modrinth,
-    val packRemote: Boolean = true,
-    val packCurseForge: Boolean = true
+    val packModrinth: Boolean = false,
+    val packCurseForge: Boolean = false
 ) {
     /**
      * 模组加载器信息
