@@ -349,8 +349,8 @@
     <string name="game_input_proxy_mode_default">Modo em tempo real</string>
     <string name="game_input_proxy_mode_simple">Modo simples</string>
     <string name="game_input_proxy_mode_send">Modo de envio</string>
-    <string name="game_menu_option_replacement_control">Substituir Layout de Controle</string>
-    <string name="game_menu_option_controls_opacity">Opacidade do layout de controle</string>
+    <string name="game_menu_option_replacement_control">Mudar layout do HUD</string>
+    <string name="game_menu_option_controls_opacity">Opacidade do HUD</string>
     <string name="game_styles_joystick_edit_use_control_layout">Usar estilo fornecido pelo layout de controle</string>
     <string name="versions_config_control">Layout de controle</string>
     <string name="control_manage_create_new_title">Novo Layout de Controle</string>
@@ -362,7 +362,7 @@
     <string name="control_manage_failed_to_save">Falha ao salvar o layout de controle</string>
     <string name="control_manage_list_empty">Sem layouts de controle</string>
     <string name="control_manage_info_description">Descrição do layout</string>
-    <string name="control_manage_info_edit">Layout de controle de edição</string>
+    <string name="control_manage_info_edit">Editar o HUD</string>
     <string name="control_manage_import_failed">Falha ao importar o arquivo de layout de controle</string>
     <string name="control_manage_import_failed_to_parse">Erro no formato do layout de controle, o launcher não consegue reconhecê-lo!</string>
     <string name="control_editor_menu_no_layers_message">Nenhuma camada de controle foi criada para o layout de controle atual. Crie uma camada de controle primeiro.</string>
@@ -1142,4 +1142,8 @@
     <string name="versions_export_tip_5">O Modpack será exportado para o diretório selecionado, usando o nome do Modpack fornecido como nome do arquivo final.</string>
     <string name="versions_export_tip_remote_1">Durante a exportação, o Launcher tentará encontrar recursos remotos na plataforma %s e incorporar links em vez de empacotar mods, texturas e shaders, o que ajuda a reduzir o tamanho do modpack.</string>
     <string name="versions_export_tip_remote_2">Ao mesmo tempo, os mods desativados serão incluídos como componentes opcionais.</string>
+    <string name="files_browse_folder">Procurar Pasta</string>
+    <string name="files_importing">Importando Arquivos</string>
+    <string name="files_delete_file">Tem certeza de que deseja excluir %s?</string>
+    <string name="versions_export_type_curseforge">Modpack do Curseforge</string>
 </resources>
