@@ -25,6 +25,7 @@ import com.movtery.zalithlauncher.game.account.Account
 import com.movtery.zalithlauncher.game.account.isAuthServerAccount
 import com.movtery.zalithlauncher.game.account.isLocalAccount
 import com.movtery.zalithlauncher.game.account.offline.OfflineYggdrasilServer
+import com.movtery.zalithlauncher.game.addons.modloader.ModLoader
 import com.movtery.zalithlauncher.game.multirt.Runtime
 import com.movtery.zalithlauncher.game.path.getAssetsHome
 import com.movtery.zalithlauncher.game.path.getLibrariesHome
@@ -289,11 +290,40 @@ class LaunchArgs(
      * [Modified from PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher/blob/a6f3fc0/app_pojavlauncher/src/main/java/net/kdt/pojavlaunch/Tools.java#L871-L882)
      */
     private fun generateLibClasspath(gameManifest: GameManifest): Array<String> {
-        val libDir: MutableList<String> = ArrayList()
+        val isCleanroom = version.getVersionInfo()?.loaderInfo?.loader == ModLoader.CLEANROOM
+        val libDir = ArrayList<String>(gameManifest.libraries.size)
+
+        var mojangICU4jLib: GameManifest.Library? = null
+        var cleanroomICU4jLib: GameManifest.Library? = null
+
         for (libItem in gameManifest.libraries) {
             if (!(GameManifest.Rule.checkRules(libItem.rules) && !libItem.isNative)) continue
-            val libArtifactPath: String = libItem.progressLibrary() ?: continue
-            libDir.add(getLibrariesHome() + "/" + libArtifactPath)
+
+            if (isCleanroom) {
+                val name = libItem.name
+                when {
+                    name.startsWith("com.ibm.icu:icu4j:") -> {
+                        cleanroomICU4jLib = libItem
+                        continue
+                    }
+                    name.startsWith("com.ibm.icu:icu4j-core-mojang:") -> {
+                        mojangICU4jLib = libItem
+                        continue
+                    }
+                }
+            }
+
+            val path = libItem.progressLibrary() ?: continue
+            libDir.add(getLibrariesHome() + "/" + path)
+        }
+
+        if (isCleanroom) {
+            cleanroomICU4jLib?.progressLibrary()?.let {
+                libDir.add(getLibrariesHome() + "/" + it)
+            }
+            mojangICU4jLib?.progressLibrary()?.let {
+                libDir.add(getLibrariesHome() + "/" + it)
+            }
         }
         return libDir.toTypedArray<String>()
     }
