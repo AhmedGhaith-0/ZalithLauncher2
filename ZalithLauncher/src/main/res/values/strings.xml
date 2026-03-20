@@ -671,7 +671,6 @@
     <string name="versions_update_loader_diff_load">Load: %1$s %2$s</string>
     <string name="versions_update_loader_error_message">An error occurred while installing the loader:</string>
     <string name="versions_update_loader_success_message">The game\'s loader version has been successfully updated!</string>
-
     <string name="versions_export">Export Modpack</string>
     <string name="versions_export_type_mcbbs">MCBBS Modpack</string>
     <string name="versions_export_type_mcbbs_summary">Can be imported by %s, HMCL, and other launchers</string>
@@ -718,7 +717,6 @@
     <string name="versions_export_tip_5">The modpack will be exported to the directory you selected, using the modpack name you provided as the final file name.</string>
     <string name="versions_export_tip_remote_1">During export, the launcher will attempt to match remote resources on the %s platform and embed links instead of packaging mods, resource packs, and shader packs, which helps reduce the modpack size.</string>
     <string name="versions_export_tip_remote_2">At the same time, disabled mods will be included as optional components.</string>
-
     <string name="manage_only_show_valid">Available</string>
     <string name="manage_delete_all">Delete All</string>
     <string name="manage_delete_all_message">Are you sure you want to delete all selected resource files? This action cannot be undone. Please proceed with caution.</string>
