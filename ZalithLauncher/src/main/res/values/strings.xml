@@ -148,6 +148,7 @@
     <string name="unpack_screen_jre8">Java 8 Environment (required for Minecraft 1.16 and below)</string>
     <string name="unpack_screen_jre17">Java 17 Environment (required for Minecraft 1.17+)</string>
     <string name="unpack_screen_jre21">Java 21 Environment (required for Minecraft 1.20.5+)</string>
+    <string name="unpack_screen_jre25">Java 25 Environment (required for Minecraft 26.1+)</string>
     <string name="unpack_screen_authlib_injector">Modifies authlib for external logins</string>
     <string name="unpack_screen_cacio">Portable GUI backend for OpenJDK</string>
     <string name="unpack_screen_lwjgl">Lightweight Java Game Library (required by Minecraft)</string>

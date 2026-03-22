@@ -132,6 +132,7 @@
     <string name="unpack_screen_jre8">Java 8 環境，Minecraft 1.16 及更早版本依賴 Java 8</string>
     <string name="unpack_screen_jre17">Java 17 環境，Minecraft 1.17+ 依賴 Java 17</string>
     <string name="unpack_screen_jre21">Java 21 環境，Minecraft 1.20.5+ 依賴 Java 21</string>
+    <string name="unpack_screen_jre25">Java 25 環境，Minecraft 26.1+ 依賴 Java 25</string>
     <string name="unpack_screen_authlib_injector">透過執行時修改 authlib 實作遊戲外登入</string>
     <string name="unpack_screen_cacio">為 OpenJDK 提供可移植的 GUI 後端</string>
     <string name="unpack_screen_lwjgl">輕量級 Java 遊戲函式庫，Minecraft 依賴它執行遊戲</string>
