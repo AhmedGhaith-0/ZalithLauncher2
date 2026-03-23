@@ -661,7 +661,7 @@
     <string name="mods_manage_version">Versão do Mod: %s</string>
     <string name="mods_manage_delete_warning">Tem certeza de que deseja excluir o mod %s? Se fizer isso não tem mais volta!</string>
     <string name="mods_manage_no_mods">Tá vazio aqui, coloca mod aí</string>
-    <string name="mods_manage_no_loader">Sem ModLoader para a versão atual manin, mods não podem ser usados agora</string>
+    <string name="mods_manage_no_loader">Ei bixo, cadê o ModLoader? Não dá pra colocar mod no vanilla</string>
     <string name="mods_update">Atualizar Mods</string>
     <string name="mods_update_warning_1">Antes de verificar se há atualizações de mods, observe que atualizar um grande número de mods de uma só vez pode causar problemas de compatibilidade, tornando um jogo que funcionava anteriormente repentinamente inutilizável.</string>
     <string name="mods_update_warning_2">O Launcher atualmente não fornece um recurso de registro de alterações de mods. Você precisa revisar os detalhes da atualização do mod para garantir a funcionalidade após a atualização.</string>
@@ -1151,4 +1151,5 @@
     <string name="page_title_account_list">Lista de contas</string>
     <string name="page_title_select_files">Selecionar Caminho</string>
     <string name="versions_install_loader">Instalar Loader</string>
+    <string name="unpack_screen_jre25">Ambiente Java 25 (necessário para Minecraft 26.1+)</string>
 </resources>
