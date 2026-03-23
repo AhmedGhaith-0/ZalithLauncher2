@@ -36,9 +36,6 @@ jobs:
           
           find ./artifacts -name "*.apk" -type f -exec cp {} ./apks/ \;
           
-          echo "Found APK files:"
-          ls -la ./apks/
-          
           # 检查是否有APK文件
           if [ -z "$(ls -A ./apks/)" ]; then
             echo "No APK files found to upload!"
