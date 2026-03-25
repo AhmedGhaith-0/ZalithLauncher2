@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="terracotta">ผู้เล่นหลายคน</string>
-    <string name="terracotta_metadata_ver">รุ่นสีดินเผา: %s</string>
+    <string name="terracotta_metadata_ver">เวอร์ชั่น Terracotta: %s</string>
     <string name="terracotta_metadata_easytier_ver">เวอร์ชัน EasyTier: %s</string>
-    <string name="terracotta_easytier">เกี่ยวกับ</string>
-    <string name="terracotta_terracotta">เทอร์ราคอตต้า | โหมดผู้เล่นหลายคน</string>
+    <string name="terracotta_easytier">เกี่ยวกับ EasyTier</string>
+    <string name="terracotta_terracotta">Terracotta | โหมดผู้เล่นหลายคน</string>
     <string name="terracotta_back">ออก</string>
     <string name="terracotta_enable">เปิดใช้งานโหมดผู้เล่นหลายคน</string>
     <string name="terracotta_difficulty_easiest">เครือข่ายยอดเยี่ยม: เชื่อมต่อได้เกือบสมบูรณ์!</string>
@@ -23,5 +23,42 @@
     <string name="terracotta_confirm_p2p">Terracotta ใช้เทคโนโลยี P2P หลังจากเชื่อมต่อสำเร็จ ผู้ใช้ในห้องจะเชื่อมต่อถึงกันโดยตรง และไม่มีเซิร์ฟเวอร์ของบุคคลที่สามใด ๆ ที่จะส่งต่อข้อมูลของคุณ ประสบการณ์การเล่นแบบผู้เล่นหลายคนขั้นสุดท้าย...</string>
     <string name="terracotta_confirm_law">ตลอดกระบวนการเล่นแบบผู้เล่นหลายคน คุณต้องปฏิบัติตามกฎหมายและข้อบังคับทั้งหมดของประเทศและภูมิภาคของคุณอย่างเคร่งครัด</string>
     <string name="terracotta_menu">เมนูผู้เล่นหลายคน</string>
-    <string name="terracotta_notification_title">เทอร์ราคอตต้ากำลังดำเนินการ</string>
+    <string name="terracotta_notification_title">Terracotta กำลังดำเนินการ</string>
+    <string name="terracotta_notification_desc">ตัวตน: %s / สถานะ: %s</string>
+    <string name="terracotta_status_waiting_host_title">ฉันจะเป็นโฮสต์เซสชั่นนี้</string>
+    <string name="terracotta_status_waiting_host_desc">สร้างห้องและสร้างรหัสเข้าร่วมเพื่อเล่นกับเพื่อน!!</string>
+    <string name="terracotta_status_waiting_guest_title">ฉันจะเข้าร่วมเซสชั่นนี้</string>
+    <string name="terracotta_status_waiting_guest_desc">ป้อนรหัสเข้าร่วมจากผู้เล่นที่เป็นโฮสต์เพื่อเข้าร่วมโลก</string>
+    <string name="terracotta_status_waiting_guest_prompt_title">กรุณาใส่รหัสเข้าร่วมจากโฮสต์</string>
+    <string name="terracotta_status_waiting_guest_prompt_invalid">ไม่พบรหัสนี้</string>
+    <string name="terracotta_status_exception_desc_ping_host_fail">ไม่สามารถเข้าก้องได้: ห้องปิดแล้วหรือเน็ตกาก</string>
+    <string name="terracotta_status_exception_desc_ping_host_rst">การเชื่อมต่อกับห้องถูกตัดการเชื่อมต่อด้วยสาเหตุหนึ่ง, อาจเป็นที่ห้องปิดแล้วหรือเน็ตกาก</string>
+    <string name="terracotta_status_exception_desc_guest_et_crash">ไม่สามารถเข้าห้องได้: EasyTier เกิดข้อผิดพลาดหรือแครช, กรุณารายงานปัญหาไปที่นักพัฒนา</string>
+    <string name="terracotta_status_exception_desc_host_et_crash">ไม่สามารถสร้างห้องได้, EasyTier แครช, กรถณารายงานปัญหาไปที่ dev</string>
+    <string name="terracotta_status_exception_desc_ping_server_rst">ห้องปิดแล้ว... เนื่องจากคุณออกจากโลก ห้องทำการปิดโดยอัตโนมัติ</string>
+    <string name="terracotta_status_exception_desc_scaffolding_invalid_response">ไท่มีข้อมูลโปรโตคอลในนี้: โฮสต์ส่งการตอบรับที่แปลกๆ ไป, กรุณาแจ้งปัญหาไปที่ dev</string>
+    <string name="terracotta_status_waiting_guest_prompt_terracotta_legacy">รหัสเชิญ Terracotta เวอร์ชันเก่า</string>
+    <string name="terracotta_status_waiting_guest_prompt_pcl2ce">รหัสเชิญ PCL CE เวอร์ชันเก่า</string>
+    <string name="terracotta_status_waiting_guest_prompt_scaffolding">รหัสเชิญ Scaffolding</string>
+    <string name="terracotta_status_host_scanning">กำลังสแกนหา โลกในเครือข่าย LAN</string>
+    <string name="terracotta_status_host_scanning_desc">โปรดเข้าโลก, กด ESC, เลือก เปิดให้ผู้เล่นผ่านLAN, แล้วเลือก เริ่มโลกLAN</string>
+    <string name="terracotta_status_host_scanning_back">นี้จะหยุดการสแกนโลกLANด้วย</string>
+    <string name="terracotta_status_host_starting">สร้างห้อง</string>
+    <string name="terracotta_status_host_starting_back">นี้จะหยุดการสร้างห้อง</string>
+    <string name="terracotta_status_host_ok">สร้างห้องแล้ว</string>
+    <string name="terracotta_status_host_ok_code">รหัสเชิญ (คัดลอกแล้ว):</string>
+    <string name="terracotta_status_host_ok_code_copy">คัดลอกรหัสเชิญ</string>
+    <string name="terracotta_status_host_ok_code_copy_toast">รหัสเชิญถูกคัดลอกไปยังคลิปบอร์ดแล้ว</string>
+    <string name="terracotta_status_host_ok_code_desc">กรุณาเตือนเพื่อนของคุณให้เลือกโหมดผู้เยี่ยมชมในฟีเจอร์ผู้เล่นหลายคนและกรอกรหัสเชิญนี้.</string>
+    <string name="terracotta_status_host_ok_back">นี้จะปิดห้องด้วย ผู้เข้าร่วมท่านอื่นจะออกจากห้องและไม่สามารถเข้าร่วมใหม่ได้</string>
+    <string name="terracotta_status_guest_starting">กำลังเข้าร่วมห้อง</string>
+    <string name="terracotta_status_guest_starting_back">นี้จะหยุดผู้เข้าร่วมท่านอื่นจากการเข้าร่วมห้อง</string>
+    <string name="terracotta_status_guest_ok">เข้าร่วมห้องแล้ว</string>
+    <string name="terracotta_status_guest_ok_back">นี้จะหยุดผู้เข้าร่วมท่านอื่นจากการเข้าร่วมห้อง</string>
+    <string name="terracotta_status_guest_ok_address">โปรดเปิดเกม, เลือกโหมดผู้เล่นหลายคน และดับเบิลคลิกที่ Terracotta Lobby. ที่อยู่สำรอง:</string>
+    <string name="terracotta_status_guest_ok_address_copy">คัดลอกที่อยู่สำลอง</string>
+    <string name="terracotta_status_guest_ok_address_copy_toast">ที่อยู่สำรองถูกคัดลอกไปยังคลิปบอร์ดเรียบร้อยแล้ว</string>
+    <string name="terracotta_status_guest_ok_address_desc">โปรดอย่าใช้ที่อยู่นี้ เว้นแต่ว่าจำเป็น</string>
+    <string name="terracotta_status_exception">ศูนย์เสียการการเชื่อมต่อ</string>
+    <string name="terracotta_status_exception_back">โปรดลองอีกครั้ง</string>
 </resources>
