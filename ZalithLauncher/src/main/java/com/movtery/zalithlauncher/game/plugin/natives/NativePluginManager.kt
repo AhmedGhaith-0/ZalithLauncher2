@@ -24,6 +24,8 @@ import com.movtery.zalithlauncher.game.plugin.ApkPlugin
 import com.movtery.zalithlauncher.game.plugin.ApkPluginManager
 import com.movtery.zalithlauncher.game.plugin.cacheAppIcon
 import com.movtery.zalithlauncher.setting.AllSettings
+import java.nio.file.Path
+import java.nio.file.Paths
 
 object NativePluginManager: ApkPluginManager() {
     private val nativePlugins = mutableListOf<NativePlugin>()
@@ -120,16 +122,41 @@ object NativePluginManager: ApkPluginManager() {
         }
     }
 
+    private const val NATIVE_LIB_DIR_PLACEHOLDER = "{nativeLibraryDir}"
+
     private fun parseEntry(
         entry: String,
         nativeLibraryDir: String
     ): String {
         var (key, value) = entry.split("=")
 
-        if (value == "{nativeLibraryDir}") {
-            value = nativeLibraryDir
+        if (value.startsWith(NATIVE_LIB_DIR_PLACEHOLDER)) {
+            if (value == NATIVE_LIB_DIR_PLACEHOLDER) {
+                value = nativeLibraryDir
+            } else {
+                val path = safePath(
+                    baseDir = nativeLibraryDir,
+                    input = value.removePrefix(NATIVE_LIB_DIR_PLACEHOLDER)
+                )
+                value = path?.toAbsolutePath()?.toString() ?: nativeLibraryDir
+            }
         }
 
         return "$key=$value"
+    }
+
+    private fun safePath(baseDir: String, input: String): Path? {
+        return try {
+            val basePath = Paths.get(baseDir).normalize().toAbsolutePath()
+            val resolvedPath = basePath.resolve(input).normalize().toAbsolutePath()
+
+            if (resolvedPath.startsWith(basePath)) {
+                resolvedPath
+            } else {
+                null //阻止路径穿越
+            }
+        } catch (_: Exception) {
+            null //无效的路径
+        }
     }
 }

@@ -90,7 +90,11 @@ class GameHandler(
         MCOptions.apply {
             set("fullscreen", "false")
             set("touchscreen", "false")
-            set("options.narrator", "0") //关闭文本转语音功能
+
+            //关闭文本转语音功能
+            set("options.narrator", "0")
+            set("narrator", "0")
+
             set("overrideWidth", screenSize.width.toString())
             set("overrideHeight", screenSize.height.toString())
             loadLanguage(version.getVersionInfo()!!.minecraftVersion)
