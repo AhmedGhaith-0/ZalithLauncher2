@@ -22,11 +22,11 @@ import androidx.annotation.StringRes
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.utils.checkDate
 import com.movtery.zalithlauncher.utils.checkDateRange
-import com.movtery.zalithlauncher.utils.festival.Festivals.entries
+import com.movtery.zalithlauncher.utils.festival.Festival.entries
 import com.xhinliang.lunarcalendar.LunarCalendar
 import java.time.LocalDate
 
-enum class Festivals(
+enum class Festival(
     val isChinese: Boolean,
     val isInternational: Boolean,
     @field:StringRes
@@ -171,7 +171,7 @@ enum class Festivals(
 fun getTodayFestivals(
     date: LocalDate = LocalDate.now(),
     containsChinese: Boolean
-): List<Festivals> {
+): List<Festival> {
     val lunarCalendar = LunarCalendar.obtainCalendar(date.year, date.monthValue, date.dayOfMonth)
     return entries.filter { festival ->
         val type = if (containsChinese) {

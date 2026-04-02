@@ -47,7 +47,10 @@ import com.movtery.zalithlauncher.ui.screens.content.elements.Background
 import com.movtery.zalithlauncher.ui.screens.content.elements.LaunchGameOperation
 import com.movtery.zalithlauncher.ui.screens.main.MainScreen
 import com.movtery.zalithlauncher.ui.theme.ZalithLauncherTheme
+import com.movtery.zalithlauncher.ui.theme.feativals.FestivalEffects
 import com.movtery.zalithlauncher.upgrade.TooFrequentOperationException
+import com.movtery.zalithlauncher.utils.festival.getTodayFestivals
+import com.movtery.zalithlauncher.utils.isChinese
 import com.movtery.zalithlauncher.utils.logging.Logger.lInfo
 import com.movtery.zalithlauncher.utils.network.openLink
 import com.movtery.zalithlauncher.viewmodel.BackgroundViewModel
@@ -199,6 +202,10 @@ class MainActivity : BaseAppCompatActivity() {
         val finishedGame = AllSettings.finishedGame
         val showSponsorship = AllSettings.showSponsorship
 
+        val festivals = getTodayFestivals(
+            containsChinese = isChinese(this@MainActivity)
+        )
+
         setContent {
             ZalithLauncherTheme(
                 backgroundViewModel = backgroundViewModel
@@ -210,6 +217,7 @@ class MainActivity : BaseAppCompatActivity() {
                     )
 
                     MainScreen(
+                        festivals = festivals,
                         screenBackStackModel = screenBackStackModel,
                         launchGameViewModel = launchGameViewModel,
                         eventViewModel = eventViewModel,
@@ -217,6 +225,12 @@ class MainActivity : BaseAppCompatActivity() {
                         submitError = {
                             errorViewModel.showError(it)
                         }
+                    )
+
+                    //节日彩蛋效果层
+                    FestivalEffects(
+                        modifier = Modifier.fillMaxSize(),
+                        festivals = festivals
                     )
 
                     //启动游戏操作流程
