@@ -43,7 +43,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -64,24 +63,19 @@ import com.movtery.zalithlauncher.game.version.installed.VersionsManager
 import com.movtery.zalithlauncher.info.InfoDistributor
 import com.movtery.zalithlauncher.ui.base.BaseScreen
 import com.movtery.zalithlauncher.ui.components.BackgroundCard
-import com.movtery.zalithlauncher.ui.components.FakeShadowDown
-import com.movtery.zalithlauncher.ui.components.FakeShadowRight
 import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.components.ScalingActionButton
-import com.movtery.zalithlauncher.ui.components.ZL1Button
-import com.movtery.zalithlauncher.ui.components.influencedByBackgroundColor
 import com.movtery.zalithlauncher.ui.screens.NestedNavKey
 import com.movtery.zalithlauncher.ui.screens.NormalNavKey
 import com.movtery.zalithlauncher.ui.screens.content.elements.AccountAvatar
 import com.movtery.zalithlauncher.ui.screens.content.elements.VersionIconImage
-import com.movtery.zalithlauncher.ui.theme.menuOverlayColor
-import com.movtery.zalithlauncher.ui.theme.menuOverlayContentColor
 import com.movtery.zalithlauncher.utils.animation.swapAnimateDpAsState
 import com.movtery.zalithlauncher.viewmodel.LaunchGameViewModel
 import com.movtery.zalithlauncher.viewmodel.ScreenBackStackViewModel
 
 @Composable
 fun LauncherScreen(
+    @Suppress("unused")
     isAprilFools: Boolean,
     backStackViewModel: ScreenBackStackViewModel,
     navigateToVersions: (Version) -> Unit,
@@ -114,35 +108,16 @@ fun LauncherScreen(
                 }
             }
 
-            if (isAprilFools) {
-                RightMenuAprilFools(
-                    isVisible = isVisible,
-                    modifier = Modifier
-                        .weight(3f)
-                        .fillMaxHeight(),
-                    launchGameViewModel = launchGameViewModel,
-                    toAccountManageScreen = toAccountManageScreen,
-                    toVersionManageScreen = toVersionManageScreen,
-                    toVersionSettingsScreen = toVersionSettingsScreen
-                )
-            } else {
-                RightMenu(
-                    isVisible = isVisible,
-                    modifier = Modifier
-                        .weight(3f)
-                        .fillMaxHeight()
-                        .padding(top = 12.dp, end = 12.dp, bottom = 12.dp),
-                    launchGameViewModel = launchGameViewModel,
-                    toAccountManageScreen = toAccountManageScreen,
-                    toVersionManageScreen = toVersionManageScreen,
-                    toVersionSettingsScreen = toVersionSettingsScreen
-                )
-            }
-        }
-
-        if (isAprilFools) {
-            FakeShadowDown(
-                modifier = Modifier.fillMaxWidth()
+            RightMenu(
+                isVisible = isVisible,
+                modifier = Modifier
+                    .weight(3f)
+                    .fillMaxHeight()
+                    .padding(top = 12.dp, end = 12.dp, bottom = 12.dp),
+                launchGameViewModel = launchGameViewModel,
+                toAccountManageScreen = toAccountManageScreen,
+                toVersionManageScreen = toVersionManageScreen,
+                toVersionSettingsScreen = toVersionSettingsScreen
             )
         }
     }
@@ -309,57 +284,6 @@ private fun RightMenu(
                 onClick = onClick,
                 content = text
             )
-        }
-    }
-}
-
-/**
- * 右侧菜单为仿 ZL1 样式（愚人节限定）
- */
-@Composable
-private fun RightMenuAprilFools(
-    isVisible: Boolean,
-    modifier: Modifier = Modifier,
-    launchGameViewModel: LaunchGameViewModel,
-    toAccountManageScreen: () -> Unit = {},
-    toVersionManageScreen: () -> Unit = {},
-    toVersionSettingsScreen: () -> Unit = {}
-) {
-    val xOffset by swapAnimateDpAsState(
-        targetValue = 40.dp,
-        swapIn = isVisible,
-        isHorizontal = true
-    )
-
-    Row(
-        modifier = modifier.offset { IntOffset(x = xOffset.roundToPx(), y = 0) },
-    ) {
-        FakeShadowRight(
-            modifier = Modifier.fillMaxHeight()
-        )
-
-        Surface(
-            modifier = Modifier
-                .fillMaxHeight()
-                .weight(1f),
-            color = influencedByBackgroundColor(
-                color = menuOverlayColor()
-            ),
-            contentColor = menuOverlayContentColor()
-        ) {
-            RightMenuContent(
-                modifier = Modifier.fillMaxSize(),
-                launchGameViewModel = launchGameViewModel,
-                toAccountManageScreen = toAccountManageScreen,
-                toVersionManageScreen = toVersionManageScreen,
-                toVersionSettingsScreen = toVersionSettingsScreen
-            ) { innerModifier, onClick, text ->
-                ZL1Button(
-                    modifier = innerModifier,
-                    onClick = onClick,
-                    content = text
-                )
-            }
         }
     }
 }

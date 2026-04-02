@@ -110,10 +110,6 @@ import com.movtery.zalithlauncher.ui.screens.content.navigateToDownload
 import com.movtery.zalithlauncher.ui.screens.navigateTo
 import com.movtery.zalithlauncher.ui.screens.onBack
 import com.movtery.zalithlauncher.ui.screens.rememberTransitionSpec
-import com.movtery.zalithlauncher.ui.theme.menuBackgroundColor
-import com.movtery.zalithlauncher.ui.theme.menuContentColor
-import com.movtery.zalithlauncher.ui.theme.menuTopBarBackgroundColor
-import com.movtery.zalithlauncher.ui.theme.menuTopBarContentColor
 import com.movtery.zalithlauncher.utils.animation.getAnimateTween
 import com.movtery.zalithlauncher.viewmodel.ErrorViewModel
 import com.movtery.zalithlauncher.viewmodel.EventViewModel
@@ -165,25 +161,10 @@ fun MainScreen(
         MaterialTheme.colorScheme.surface.copy(alpha = launcherBackgroundOpacity)
     } else MaterialTheme.colorScheme.surface
 
-    val backgroundColor0 = if (isAprilFools) {
-        menuBackgroundColor(
-            color = backgroundColor,
-            hasBackgroundContent = isBackgroundValid,
-            enabled = inLauncherScreen
-        )
-    } else backgroundColor
-
-    val contentColor = if (isAprilFools) {
-        menuContentColor(
-            color = MaterialTheme.colorScheme.onSurface,
-            enabled = inLauncherScreen
-        )
-    } else MaterialTheme.colorScheme.onSurface
-
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = backgroundColor0,
-        contentColor = contentColor
+        color = backgroundColor,
+        contentColor = MaterialTheme.colorScheme.onSurface
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             val topBarColor = MaterialTheme.colorScheme.surfaceContainer
@@ -224,7 +205,6 @@ fun MainScreen(
                 changeExpandedState = {
                     changeTasksExpandedState()
                 },
-                isAprilFools = isAprilFools
             )
 
             Box(
@@ -274,28 +254,15 @@ private fun <E: TitledNavKey> TopBar(
     toDownloadScreen: () -> Unit,
     toMultiplayerScreen: () -> Unit,
     changeExpandedState: () -> Unit,
-    isAprilFools: Boolean
 ) {
     val inMultiplayerScreen = mainScreenKey is NormalNavKey.Multiplayer
     val inDownloadScreen = mainScreenKey is NestedNavKey.Download
     val inSettingsScreen = mainScreenKey is NestedNavKey.Settings
 
-    val color0 = if (isAprilFools) {
-        menuTopBarBackgroundColor(color, inLauncherScreen)
-    } else {
-        color
-    }
-
-    val contentColor0 = if (isAprilFools) {
-        menuTopBarContentColor(contentColor, inLauncherScreen)
-    } else {
-        contentColor
-    }
-
     Surface(
         modifier = modifier,
-        color = color0,
-        contentColor = contentColor0,
+        color = color,
+        contentColor = contentColor,
         tonalElevation = 3.dp
     ) {
         ConstraintLayout {
@@ -420,7 +387,7 @@ private fun <E: TitledNavKey> TopBar(
                     onClick = {
                         if (!inMultiplayerScreen) toMultiplayerScreen()
                     },
-                    color = contentColor0
+                    color = contentColor
                 )
 
                 TopBarRailItem(
@@ -430,7 +397,7 @@ private fun <E: TitledNavKey> TopBar(
                     onClick = {
                         if (!inDownloadScreen) toDownloadScreen()
                     },
-                    color = contentColor0
+                    color = contentColor
                 )
 
                 TopBarRailItem(
@@ -440,7 +407,7 @@ private fun <E: TitledNavKey> TopBar(
                     onClick = {
                         if (!inSettingsScreen) toSettingsScreen()
                     },
-                    color = contentColor0
+                    color = contentColor
                 )
             }
         }
