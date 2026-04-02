@@ -1207,5 +1207,7 @@
     <string name="language_uyghur" translatable="false">ۋىغرۇچە</string>
     <string name="language_filipino" translatable="false">Filipino</string>
 
-    <string name="days_april_fools">Happy April Fools\' Day!</string>
+    <string name="festivals_new_year">Happy New Year!</string>
+    <string name="festivals_april_fools">Happy April Fools\' Day!</string>
+    <string name="festivals_christmas">Merry Christmas!</string>
 </resources>

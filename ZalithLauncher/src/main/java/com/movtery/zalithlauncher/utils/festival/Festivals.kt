@@ -18,6 +18,8 @@
 
 package com.movtery.zalithlauncher.utils.festival
 
+import androidx.annotation.StringRes
+import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.utils.checkDate
 import com.movtery.zalithlauncher.utils.checkDateRange
 import com.movtery.zalithlauncher.utils.festival.Festivals.entries
@@ -27,11 +29,17 @@ import java.time.LocalDate
 enum class Festivals(
     val isChinese: Boolean,
     val isInternational: Boolean,
+    @field:StringRes
+    val textRes: Int
 ) {
     /**
      * 新年
      */
-    NEW_YEAR(isChinese = true, isInternational = true) {
+    NEW_YEAR(
+        isChinese = true,
+        isInternational = true,
+        textRes = R.string.festivals_new_year
+    ) {
         override fun isToday(
             date: LocalDate,
             lunarCalendar: LunarCalendar
@@ -43,7 +51,11 @@ enum class Festivals(
     /**
      * 春节
      */
-    SPRING_FESTIVAL(isChinese = true, isInternational = false) {
+    SPRING_FESTIVAL(
+        isChinese = true,
+        isInternational = false,
+        textRes = R.string.festivals_spring
+    ) {
         override fun isToday(
             date: LocalDate,
             lunarCalendar: LunarCalendar
@@ -55,7 +67,11 @@ enum class Festivals(
     /**
      * 清明节
      */
-    QING_MING(isChinese = true, isInternational = false) {
+    QING_MING(
+        isChinese = true,
+        isInternational = false,
+        textRes = R.string.festivals_qing_ming
+    ) {
         override fun isToday(
             date: LocalDate,
             lunarCalendar: LunarCalendar
@@ -67,7 +83,11 @@ enum class Festivals(
     /**
      * 端午节
      */
-    DRAGON_BOAT(isChinese = true, isInternational = false) {
+    DRAGON_BOAT(
+        isChinese = true,
+        isInternational = false,
+        textRes = R.string.festivals_dragon_boat
+    ) {
         override fun isToday(
             date: LocalDate,
             lunarCalendar: LunarCalendar
@@ -79,7 +99,11 @@ enum class Festivals(
     /**
      * 中秋节
      */
-    MID_AUTUMN(isChinese = true, isInternational = false) {
+    MID_AUTUMN(
+        isChinese = true,
+        isInternational = false,
+        textRes = R.string.festivals_mid_autumn
+    ) {
         override fun isToday(
             date: LocalDate,
             lunarCalendar: LunarCalendar
@@ -91,7 +115,11 @@ enum class Festivals(
     /**
      * 国庆节
      */
-    NATIONAL_DAY(isChinese = true, isInternational = false) {
+    NATIONAL_DAY(
+        isChinese = true,
+        isInternational = false,
+        textRes = R.string.festivals_national_day
+    ) {
         override fun isToday(
             date: LocalDate,
             lunarCalendar: LunarCalendar
@@ -103,7 +131,11 @@ enum class Festivals(
     /**
      * 愚人节
      */
-    APRIL_FOOLS(isChinese = false, isInternational = true) {
+    APRIL_FOOLS(
+        isChinese = false,
+        isInternational = true,
+        textRes = R.string.festivals_april_fools
+    ) {
         override fun isToday(
             date: LocalDate,
             lunarCalendar: LunarCalendar
@@ -115,7 +147,11 @@ enum class Festivals(
     /**
      * 圣诞节
      */
-    CHRISTMAS(isChinese = false, isInternational = true) {
+    CHRISTMAS(
+        isChinese = false,
+        isInternational = true,
+        textRes = R.string.festivals_christmas
+    ) {
         override fun isToday(
             date: LocalDate,
             lunarCalendar: LunarCalendar

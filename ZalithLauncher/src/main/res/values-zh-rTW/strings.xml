@@ -1186,5 +1186,7 @@
     <string name="control_editor_exit_message">您確定要直接退出嗎？這將導致您的任何變更都無法被儲存。若需要儲存，請檢查編輯器選單。</string>
     <string name="control_editor_exit_confirm">直接退出</string>
 
-    <string name="days_april_fools">愚人節快樂！</string>
+    <string name="festivals_new_year">新年快樂！</string>
+    <string name="festivals_april_fools">愚人節快樂！</string>
+    <string name="festivals_christmas">聖誕節快樂！</string>
 </resources>

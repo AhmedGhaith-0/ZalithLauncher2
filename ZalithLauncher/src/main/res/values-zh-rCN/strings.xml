@@ -1189,5 +1189,7 @@
     <string name="url_wiki_minecraft_game_release">https://zh.minecraft.wiki/w/Java%%E7%%89%%88%s?variant=zh-cn</string>
     <string name="url_wiki_minecraft_game_snapshot">https://zh.minecraft.wiki/w/%s?variant=zh-cn</string>
 
-    <string name="days_april_fools">愚人节快乐！</string>
+    <string name="festivals_new_year">新年快乐！</string>
+    <string name="festivals_april_fools">愚人节快乐！</string>
+    <string name="festivals_christmas">圣诞节快乐！</string>
 </resources>
