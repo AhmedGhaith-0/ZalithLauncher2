@@ -1161,6 +1161,15 @@ fun ChangeSkinDialog(
         )
     }
 
+    /**
+     * 初始化/重置为 账号设置的披风
+     */
+    fun loadCape() {
+        if (account.isMicrosoftAccount()) {
+            playerSkin.loadCape(currentUsingCape)
+        }
+    }
+
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(
@@ -1297,12 +1306,14 @@ fun ChangeSkinDialog(
                                 }
                             }
 
-                            if (pendingSkinData != null) {
+                            if (pendingSkinData != null || pendingCape != null) {
                                 FilledTonalButton(
                                     modifier = Modifier.fillMaxWidth(),
                                     onClick = {
                                         pendingSkinData = null
+                                        pendingCape = null
                                         loadSkin()
+                                        loadCape()
                                     }
                                 ) {
                                     Icon(Icons.Default.RestartAlt, contentDescription = null)
