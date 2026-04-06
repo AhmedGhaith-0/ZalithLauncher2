@@ -53,6 +53,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -84,6 +87,7 @@ import com.movtery.zalithlauncher.ui.components.MenuTextButton
 import com.movtery.zalithlauncher.ui.components.ScalingActionButton
 import com.movtery.zalithlauncher.ui.components.itemLayoutColor
 import com.movtery.zalithlauncher.ui.components.itemLayoutShadowElevation
+import kotlinx.coroutines.delay
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -511,6 +515,16 @@ private fun ColumnScope.ControlLayerMenu(
         }
     }
 
+    var createdNew by remember { mutableStateOf(false) }
+    LaunchedEffect(createdNew) {
+        if (createdNew) {
+            runCatching {
+                lazyListState.animateScrollToItem(0)
+                createdNew = false
+            }
+        }
+    }
+
     LazyColumn(
         modifier = Modifier.weight(1f),
         state = lazyListState,
@@ -550,7 +564,10 @@ private fun ColumnScope.ControlLayerMenu(
             .padding(horizontal = 8.dp)
             .padding(bottom = 4.dp)
             .fillMaxWidth(),
-        onClick = createLayer
+        onClick = {
+            createLayer()
+            createdNew = true
+        }
     ) {
         MarqueeText(text = stringResource(R.string.control_editor_layers_create))
     }
