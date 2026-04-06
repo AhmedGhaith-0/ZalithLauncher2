@@ -1284,8 +1284,7 @@ fun ChangeSkinDialog(
                                     if (isFetchingCapes) {
                                         CircularProgressIndicator(
                                             modifier = Modifier.size(18.dp),
-                                            strokeWidth = 2.dp,
-                                            color = MaterialTheme.colorScheme.onPrimary
+                                            strokeWidth = 2.dp
                                         )
                                     } else {
                                         Icon(Icons.Outlined.Checkroom, contentDescription = null)
