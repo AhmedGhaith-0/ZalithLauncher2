@@ -1155,4 +1155,14 @@
     <string name="festivals_new_year">Feliz Ano Novo!</string>
     <string name="festivals_april_fools">Feliz Dia da Mentira!</string>
     <string name="festivals_christmas">Feliz Natal!</string>
+    <string name="settings_launcher_festivals_effects_title">Efeitos persistentes de ovos da Páscoa em festivais</string>
+    <string name="settings_launcher_festivals_effects_summary">Exibir efeitos persistentes de easter egg durante períodos específicos</string>
+    <string name="control_manage_import">Importar layout do HUD</string>
+    <string name="control_editor_layers_delete">Mano, ocê tem certeza que deseja excluir a camada %s do seu HUD?</string>
+    <string name="control_editor_layers_attribute_hide_when_mouse">Ocultar ao usar o mouse</string>
+    <string name="control_editor_layers_attribute_hide_when_gamepad">Ocultar ao usar um gamepad</string>
+    <string name="control_editor_layers_attribute_hide_when_joystick">Ocultar quando o joystick estiver ativado</string>
+    <string name="control_editor_edit_dialog_delete_widget">Tem certeza de que deseja excluir este widget?</string>
+    <string name="control_editor_edit_style_config_common_style">Não diferenciar o tema escuro</string>
+    <string name="control_editor_edit_style_config_delete">Mano, ocê tem certeza que deseja excluir a aparência do HUD %s?</string>
 </resources>
