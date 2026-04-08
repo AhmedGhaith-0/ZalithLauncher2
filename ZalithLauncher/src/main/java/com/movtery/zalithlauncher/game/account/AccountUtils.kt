@@ -141,7 +141,7 @@ fun microsoftLogin(
                 updateProgress = task::updateProgress
             )
             task.updateMessage(R.string.account_logging_in_saving)
-            account.downloadSkin()
+            account.downloadYggdrasil()
             AccountsManager.saveAccount(account)
         },
         onError = { th ->

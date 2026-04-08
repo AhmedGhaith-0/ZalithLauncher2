@@ -33,8 +33,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,7 +41,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -56,6 +54,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.movtery.zalithlauncher.R
@@ -73,6 +72,8 @@ import com.movtery.zalithlauncher.game.account.yggdrasil.PlayerProfile
 import com.movtery.zalithlauncher.ui.base.BaseScreen
 import com.movtery.zalithlauncher.ui.components.BackgroundCard
 import com.movtery.zalithlauncher.ui.components.MarqueeText
+import com.movtery.zalithlauncher.ui.components.ModelAnimation
+import com.movtery.zalithlauncher.ui.components.PlayerSkin
 import com.movtery.zalithlauncher.ui.components.ScalingActionButton
 import com.movtery.zalithlauncher.ui.components.ScalingLabel
 import com.movtery.zalithlauncher.ui.components.SimpleAlertDialog
@@ -85,19 +86,18 @@ import com.movtery.zalithlauncher.ui.screens.content.elements.AccountSkinOperati
 import com.movtery.zalithlauncher.ui.screens.content.elements.ChangeSkinDialog
 import com.movtery.zalithlauncher.ui.screens.content.elements.LocalLoginDialog
 import com.movtery.zalithlauncher.ui.screens.content.elements.LocalLoginOperation
-import com.movtery.zalithlauncher.ui.screens.content.elements.LoginItem
+import com.movtery.zalithlauncher.ui.screens.content.elements.LoginMenuDialog
+import com.movtery.zalithlauncher.ui.screens.content.elements.LoginMenuOperation
 import com.movtery.zalithlauncher.ui.screens.content.elements.MicrosoftLoginOperation
 import com.movtery.zalithlauncher.ui.screens.content.elements.MicrosoftLoginTipDialog
 import com.movtery.zalithlauncher.ui.screens.content.elements.OtherLoginOperation
 import com.movtery.zalithlauncher.ui.screens.content.elements.OtherServerLoginDialog
-import com.movtery.zalithlauncher.ui.screens.content.elements.ServerItem
 import com.movtery.zalithlauncher.ui.screens.content.elements.ServerOperation
 import com.movtery.zalithlauncher.utils.animation.swapAnimateDpAsState
 import com.movtery.zalithlauncher.utils.copyText
 import com.movtery.zalithlauncher.utils.string.getMessageOrToString
 import com.movtery.zalithlauncher.viewmodel.AccountManageEffect
 import com.movtery.zalithlauncher.viewmodel.AccountManageIntent
-import com.movtery.zalithlauncher.viewmodel.AccountManageUiState
 import com.movtery.zalithlauncher.viewmodel.AccountManageViewModel
 import com.movtery.zalithlauncher.viewmodel.ErrorViewModel
 import com.movtery.zalithlauncher.viewmodel.LocalBackgroundViewModel
@@ -113,7 +113,6 @@ import com.movtery.zalithlauncher.viewmodel.ScreenBackStackViewModel
  * @property checkIfInWebScreen 检查当前是否在浏览器界面中（用于微软登录逻辑判断）
  * @property formatError 格式化异常为本地化字符串
  * @property submitError 提交错误到全局错误展示系统
- * @property refreshAvatarMap 维护各个账号头像是否需要刷新的状态映射
  */
 private data class AccountActions(
     val onIntent: (AccountManageIntent) -> Unit,
@@ -123,7 +122,6 @@ private data class AccountActions(
     val checkIfInWebScreen: () -> Boolean,
     val formatError: (Context, Throwable) -> String,
     val submitError: (ErrorViewModel.ThrowableMessage) -> Unit,
-    val refreshAvatarMap: MutableMap<String, Boolean>
 )
 
 /**
@@ -144,10 +142,9 @@ fun AccountManageScreen(
     viewModel: AccountManageViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    // 头像刷新机制：ViewModel 发送 Effect，UI 层更新 refreshAvatarMap 触发局部重绘
-    val refreshAvatarMap = remember { mutableStateMapOf<String, Boolean>() }
+    val loginUiState by viewModel.loginUiState.collectAsStateWithLifecycle()
+    val profileUiState by viewModel.profileUiState.collectAsStateWithLifecycle()
+    val operationUiState by viewModel.operationUiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -164,11 +161,6 @@ fun AccountManageScreen(
                     }
                     Toast.makeText(context, message, effect.duration).show()
                 }
-
-                is AccountManageEffect.RefreshAvatar -> {
-                    val current = refreshAvatarMap[effect.accountUuid] ?: false
-                    refreshAvatarMap[effect.accountUuid] = !current
-                }
             }
         }
     }
@@ -178,8 +170,7 @@ fun AccountManageScreen(
         backToMainScreen,
         openLink,
         backStackViewModel,
-        submitError,
-        refreshAvatarMap
+        submitError
     ) {
         AccountActions(
             onIntent = viewModel::onIntent,
@@ -189,7 +180,6 @@ fun AccountManageScreen(
             checkIfInWebScreen = { backStackViewModel.mainScreen.currentKey is NormalNavKey.WebScreen },
             formatError = { _, th -> viewModel.formatAccountError(th) },
             submitError = submitError,
-            refreshAvatarMap = refreshAvatarMap
         )
     }
 
@@ -199,7 +189,9 @@ fun AccountManageScreen(
     ) { isVisible ->
         AccountManageContent(
             isVisible = isVisible,
-            uiState = uiState,
+            loginUiState = loginUiState,
+            profileUiState = profileUiState,
+            operationUiState = operationUiState,
             actions = actions
         )
     }
@@ -211,19 +203,21 @@ fun AccountManageScreen(
 @Composable
 private fun AccountManageContent(
     isVisible: Boolean,
-    uiState: AccountManageUiState,
+    loginUiState: AccountManageViewModel.LoginUiState,
+    profileUiState: AccountManageViewModel.ProfileUiState,
+    operationUiState: AccountManageViewModel.OperationUiState,
     actions: AccountActions
 ) {
     Row(
         modifier = Modifier.fillMaxSize()
     ) {
-        ServerTypeMenu(
+        ActionsLayout(
             isVisible = isVisible,
             modifier = Modifier
                 .fillMaxHeight()
                 .padding(all = 12.dp)
                 .weight(3f),
-            authServers = uiState.authServers,
+            currentAccount = profileUiState.currentAccount,
             actions = actions
         )
 
@@ -233,29 +227,30 @@ private fun AccountManageContent(
                 .fillMaxHeight()
                 .padding(top = 12.dp, end = 12.dp, bottom = 12.dp)
                 .weight(7f),
-            accounts = uiState.accounts,
-            currentAccount = uiState.currentAccount,
-            accountOperation = uiState.accountOperation,
-            accountSkinOperationMap = uiState.accountSkinOperationMap,
-            microsoftCapes = uiState.microsoftCapes,
+            accounts = profileUiState.accounts,
+            currentAccount = profileUiState.currentAccount,
+            accountOperation = operationUiState.accountOp,
+            accountSkins = profileUiState.accountSkinOpMap,
+            accountCapes = profileUiState.accountCapeOpMap,
             actions = actions
         )
     }
 
-    MicrosoftLoginOperation(uiState.microsoftLoginOperation, actions)
-    LocalLoginOperation(uiState.localLoginOperation, actions)
-    OtherLoginOperation(uiState.otherLoginOperation, actions)
-    ServerTypeOperation(uiState.serverOperation, actions)
+    LoginMenuOperation(loginUiState.menuOp, actions, profileUiState.authServers)
+    MicrosoftLoginOperation(loginUiState.microsoftOp, actions)
+    LocalLoginOperation(loginUiState.localOp, actions)
+    OtherLoginOperation(loginUiState.otherOp, actions)
+    ServerTypeOperation(operationUiState.serverOp, actions)
 }
 
 /**
  * 左侧登录方式菜单组件
  */
 @Composable
-private fun ServerTypeMenu(
+private fun ActionsLayout(
     isVisible: Boolean,
     modifier: Modifier = Modifier,
-    authServers: List<AuthServer>,
+    currentAccount: Account?,
     actions: AccountActions
 ) {
     val xOffset by swapAnimateDpAsState(
@@ -264,72 +259,121 @@ private fun ServerTypeMenu(
         isHorizontal = true
     )
 
-    BackgroundCard(
+    Column(
         modifier = modifier
             .offset { IntOffset(x = xOffset.roundToPx(), y = 0) }
-            .fillMaxHeight(),
-        shape = MaterialTheme.shapes.extraLarge
+            .fillMaxHeight()
     ) {
-        Column(
+        //玩家模型预览
+        val refreshWardrobe by AccountsManager.refreshWardrobe.collectAsStateWithLifecycle()
+        val accountSkin = remember(currentAccount, refreshWardrobe) {
+            currentAccount?.getSkinFile()?.takeIf { it.exists() }
+        }
+        val accountCape = remember(currentAccount, refreshWardrobe) {
+            currentAccount?.getCapeFile()?.takeIf { it.exists() }
+        }
+        val context = LocalContext.current
+        val playerSkin = remember {
+            PlayerSkin(context)
+        }
+        var pageFinished by remember { mutableStateOf(false) }
+        Box(
             modifier = Modifier
                 .weight(1f)
-                .verticalScroll(state = rememberScrollState())
-                .padding(all = 12.dp)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
         ) {
-            // 微软账号登录入口
-            LoginItem(
-                modifier = Modifier.fillMaxWidth(),
-                serverName = stringResource(R.string.account_type_microsoft),
-            ) {
-                if (!isMicrosoftLogging()) {
-                    actions.onIntent(
-                        AccountManageIntent.UpdateMicrosoftLoginOp(
-                            MicrosoftLoginOperation.Tip
-                        )
+            AndroidView(
+                modifier = Modifier.fillMaxSize(),
+                factory = { context ->
+                    playerSkin.loadWebView(
+                        context = context,
+                        onPageFinished = {
+                            pageFinished = true
+                            playerSkin.startAnim(ModelAnimation.NewIdle)
+                            playerSkin.setAzimuthAndPitch(-35, 10)
+                        }
                     )
-                }
-            }
-            // 离线账号登录入口
-            LoginItem(
-                modifier = Modifier.fillMaxWidth(),
-                serverName = stringResource(R.string.account_type_local)
-            ) {
-                actions.onIntent(AccountManageIntent.UpdateLocalLoginOp(LocalLoginOperation.Edit))
-            }
-
-            // 第三方验证服务器登录入口
-            authServers.forEach { server ->
-                ServerItem(
-                    server = server,
-                    onClick = {
-                        actions.onIntent(
-                            AccountManageIntent.UpdateOtherLoginOp(
-                                OtherLoginOperation.OnLogin(
-                                    server
-                                )
-                            )
-                        )
-                    },
-                    onDeleteClick = {
-                        actions.onIntent(
-                            AccountManageIntent.UpdateServerOp(
-                                ServerOperation.Delete(
-                                    server
-                                )
-                            )
-                        )
+                },
+                update = {
+                    if (currentAccount != null && pageFinished) {
+                        runCatching {
+                            accountSkin?.inputStream().use { inputStream ->
+                                playerSkin.loadSkin(inputStream, currentAccount.skinModelType)
+                            }
+                        }
+                        runCatching {
+                            accountCape?.inputStream().use { inputStream ->
+                                playerSkin.loadCape(inputStream)
+                            }
+                        }
                     }
-                )
+                }
+            )
+            if (!pageFinished) {
+                CircularProgressIndicator()
             }
         }
 
+        //添加账号
         ScalingActionButton(
             modifier = Modifier
-                .padding(PaddingValues(horizontal = 12.dp, vertical = 8.dp))
                 .fillMaxWidth(),
-            onClick = { actions.onIntent(AccountManageIntent.UpdateServerOp(ServerOperation.AddNew)) }
+            onClick = {
+                actions.onIntent(AccountManageIntent.UpdateLoginMenuOp(LoginMenuOperation.Login))
+            }
         ) {
-            MarqueeText(text = stringResource(R.string.account_add_new_server_button))
+            MarqueeText(text = stringResource(R.string.account_add_new_account))
+        }
+    }
+}
+
+@Composable
+private fun LoginMenuOperation(
+    operation: LoginMenuOperation,
+    actions: AccountActions,
+    authServers: List<AuthServer>
+) {
+    when (operation) {
+        LoginMenuOperation.None -> {}
+        LoginMenuOperation.Login -> {
+            LoginMenuDialog(
+                onDismissRequest = {
+                    actions.onIntent(
+                        AccountManageIntent.UpdateLoginMenuOp(LoginMenuOperation.None)
+                    )
+                },
+                authServers = authServers,
+                onMicrosoftLogin = {
+                    if (!isMicrosoftLogging()) {
+                        actions.onIntent(
+                            AccountManageIntent.UpdateMicrosoftLoginOp(
+                                MicrosoftLoginOperation.Tip
+                            )
+                        )
+                    }
+                },
+                onLocalLogin = {
+                    actions.onIntent(AccountManageIntent.UpdateLocalLoginOp(LocalLoginOperation.Edit))
+                },
+                onAuthServerLogin = { server ->
+                    actions.onIntent(
+                        AccountManageIntent.UpdateOtherLoginOp(
+                            OtherLoginOperation.OnLogin(server)
+                        )
+                    )
+                },
+                onAddAuthServer = {
+                    actions.onIntent(AccountManageIntent.UpdateServerOp(ServerOperation.AddNew))
+                },
+                onDeleteAuthServer = { server ->
+                    actions.onIntent(
+                        AccountManageIntent.UpdateServerOp(
+                            ServerOperation.Delete(server)
+                        )
+                    )
+                }
+            )
         }
     }
 }
@@ -605,8 +649,8 @@ private fun AccountsLayout(
     accounts: List<Account>,
     currentAccount: Account?,
     accountOperation: AccountOperation,
-    accountSkinOperationMap: Map<String, AccountSkinOperation>,
-    microsoftCapes: Map<String, List<PlayerProfile.Cape>>,
+    accountSkins: Map<String, AccountSkinOperation>,
+    accountCapes: Map<String, List<PlayerProfile.Cape>>,
     actions: AccountActions
 ) {
     val yOffset by swapAnimateDpAsState(targetValue = (-40).dp, swapIn = isVisible)
@@ -626,13 +670,12 @@ private fun AccountsLayout(
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
             ) {
                 items(accounts, key = { it.uniqueUUID }) { account ->
-                    val skinOp =
-                        accountSkinOperationMap[account.uniqueUUID] ?: AccountSkinOperation.None
+                    val skinOp = accountSkins[account.uniqueUUID] ?: AccountSkinOperation.None
 
                     AccountSkinOperation(
                         account = account,
                         accountSkinOperation = skinOp,
-                        availableCapes = microsoftCapes[account.uniqueUUID] ?: emptyList(),
+                        availableCapes = accountCapes[account.uniqueUUID] ?: emptyList(),
                         updateOperation = {
                             actions.onIntent(
                                 AccountManageIntent.UpdateAccountSkinOp(
@@ -650,7 +693,6 @@ private fun AccountsLayout(
                             .padding(vertical = 6.dp),
                         currentAccount = currentAccount,
                         account = account,
-                        refreshKey = actions.refreshAvatarMap[account.uniqueUUID] ?: false,
                         onSelected = { AccountsManager.setCurrentAccount(it) },
                         openChangeSkinDialog = {
                             if (!account.isAuthServerAccount()) {
@@ -750,7 +792,7 @@ private fun AccountSkinOperation(
                         actions.onIntent(
                             AccountManageIntent.ApplyMicrosoftCape(
                                 account,
-                                cape.id.takeIf { cape != EmptyCape },
+                                cape.takeIf { cape != EmptyCape },
                                 name,
                                 cape == EmptyCape
                             )
@@ -808,7 +850,9 @@ private fun AccountManageContentPreview() {
             Surface {
                 AccountManageContent(
                     isVisible = true,
-                    uiState = AccountManageUiState(),
+                    loginUiState = AccountManageViewModel.LoginUiState(),
+                    profileUiState = AccountManageViewModel.ProfileUiState(),
+                    operationUiState = AccountManageViewModel.OperationUiState(),
                     actions = AccountActions(
                         onIntent = {},
                         openLink = {},
@@ -817,7 +861,6 @@ private fun AccountManageContentPreview() {
                         checkIfInWebScreen = { false },
                         formatError = { _, _ -> "" },
                         submitError = {},
-                        refreshAvatarMap = mutableMapOf()
                     )
                 )
             }

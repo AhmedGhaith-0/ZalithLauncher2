@@ -20,6 +20,7 @@ package com.movtery.zalithlauncher.game.account
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.movtery.zalithlauncher.game.account.wardrobe.CapeFileDownloader
 import com.movtery.zalithlauncher.game.account.wardrobe.SkinFileDownloader
 import com.movtery.zalithlauncher.game.account.wardrobe.SkinModelType
 import com.movtery.zalithlauncher.game.account.wardrobe.getLocalUUIDWithSkinModel
@@ -27,6 +28,8 @@ import com.movtery.zalithlauncher.path.PathManager
 import com.movtery.zalithlauncher.utils.logging.Logger.lError
 import com.movtery.zalithlauncher.utils.logging.Logger.lInfo
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.withContext
 import org.apache.commons.io.FileUtils
 import java.io.File
@@ -56,14 +59,26 @@ data class Account(
 
     fun getSkinFile() = File(PathManager.DIR_ACCOUNT_SKIN, "$uniqueUUID.png")
 
+    fun getCapeFile() = File(PathManager.DIR_ACCOUNT_CAPE, "$uniqueUUID.png")
+
     /**
      * 下载并更新账号的皮肤文件
      */
-    suspend fun downloadSkin() = withContext(Dispatchers.IO) {
-        when {
-            isMicrosoftAccount() -> updateSkin("https://sessionserver.mojang.com")
-            isAuthServerAccount() -> updateSkin(otherBaseUrl!!.removeSuffix("/") + "/sessionserver/")
-            else -> {}
+    suspend fun downloadYggdrasil() = withContext(Dispatchers.IO) {
+        val baseUrl = when {
+            isMicrosoftAccount() -> "https://sessionserver.mojang.com"
+            isAuthServerAccount() -> otherBaseUrl!!.removeSuffix("/") + "/sessionserver/"
+            else -> null
+        }
+        baseUrl?.let { url ->
+            listOf(
+                async {
+                    updateSkin(url)
+                },
+                async {
+                    updateCape(url)
+                }
+            ).joinAll()
         }
     }
 
@@ -72,14 +87,26 @@ data class Account(
         if (skinFile.exists()) FileUtils.deleteQuietly(skinFile) //清除一次皮肤文件
 
         runCatching {
-            SkinFileDownloader().yggdrasil(url, skinFile, profileId) { modelType ->
+            SkinFileDownloader().download(url, skinFile, profileId) { modelType ->
                 this.skinModelType = modelType
             }
             lInfo("Update skin success")
         }.onFailure { e ->
             lError("Could not update skin", e)
         }
-        //刷新头像
-        AccountsManager.refreshAccountsAvatar()
+        AccountsManager.refreshWardrobe()
+    }
+
+    private suspend fun updateCape(url: String) {
+        val capeFile = getCapeFile()
+        if (capeFile.exists()) FileUtils.deleteQuietly(capeFile) //清除一次披风文件
+
+        runCatching {
+            CapeFileDownloader().download(url, capeFile, profileId)
+            lInfo("Update cape success")
+        }.onFailure { e ->
+            lError("Could not update cape", e)
+        }
+        AccountsManager.refreshWardrobe()
     }
 }

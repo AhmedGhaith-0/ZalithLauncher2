@@ -228,22 +228,26 @@ class LaunchArgs(
         varArgMap["natives_directory"] = runtimeLibraryPath
         setLauncherInfo(varArgMap)
 
-        fun Any.processJvmArg(): String? = (this as? String)?.let {
+        fun Any.processJvmArg(): String? = (this as? String)?.let { argument ->
+            if (argument.startsWith("-Djava.library.path=")) {
+                //26.2+ Mojang 更改到了具体的路径，需要手动重定向
+                return@let $$"-Djava.library.path=${natives_directory}"
+            }
             when {
-                it.startsWith("-DignoreList=") -> {
-                    "$it,${version.getVersionName()}.jar"
+                argument.startsWith("-DignoreList=") -> {
+                    "$argument,${version.getVersionName()}.jar"
                 }
-                it.contains("-Dio.netty.native.workdir") ||
-                it.contains("-Djna.tmpdir") ||
-                it.contains("-Dorg.lwjgl.system.SharedLibraryExtractPath") -> {
+                argument.contains("-Dio.netty.native.workdir") ||
+                argument.contains("-Djna.tmpdir") ||
+                argument.contains("-Dorg.lwjgl.system.SharedLibraryExtractPath") -> {
                     //使用一个可读的目录
-                    it.replace("\${natives_directory}", PathManager.DIR_CACHE.absolutePath)
+                    argument.replace($$"${natives_directory}", PathManager.DIR_CACHE.absolutePath)
                 }
-                it == "\${classpath}" -> {
+                argument == $$"${classpath}" -> {
                     hasClasspath = true
                     launchClassPath
                 }
-                else -> it
+                else -> argument
             }
         }
 

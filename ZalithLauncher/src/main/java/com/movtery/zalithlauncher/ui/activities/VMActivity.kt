@@ -94,6 +94,7 @@ import com.movtery.zalithlauncher.viewmodel.ErrorViewModel
 import com.movtery.zalithlauncher.viewmodel.EventViewModel
 import com.movtery.zalithlauncher.viewmodel.GamepadViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -403,6 +404,15 @@ class VMActivity : BaseAppCompatActivity(), SurfaceTextureListener {
             }
         })
 
+        //关闭菜单之后，每次启动游戏都提醒，防止部分人误触了不知道怎么解决 >:(
+        if (!AllSettings.showMenuBall.getValue()) {
+            Toast.makeText(
+                this@VMActivity,
+                getString(R.string.game_menu_option_show_menu_hided),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+
         setContent {
             ZalithLauncherTheme {
                 Screen {
@@ -477,6 +487,18 @@ class VMActivity : BaseAppCompatActivity(), SurfaceTextureListener {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         vmViewModel.onConfigurationChanged()
+    }
+
+    override fun onPostResume() {
+        super.onPostResume()
+        lifecycleScope.launch {
+            if (vmViewModel.isRunning) {
+                delay(50L)
+                withContext(Dispatchers.Main) {
+                    refreshWindowSize(screenSize = vmViewModel.screenSize)
+                }
+            }
+        }
     }
 
     private fun refreshWindowSize(

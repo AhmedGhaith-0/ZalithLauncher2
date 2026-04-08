@@ -608,6 +608,8 @@
     <string name="versions_config_auto_join_server_ip_summary">在此填入伺服器 IP，啟動遊戲後將自動加入目標伺服器。例如 114.514.114.514:114514</string>
     <string name="versions_config_enable_touch_proxy_title">啟用觸控代理</string>
     <string name="versions_config_enable_touch_proxy_summary">啟用為支援 Touch Controller 模組準備的觸控代理</string>
+    <string name="versions_config_vibrate_kind_title">振動類型</string>
+    <string name="versions_config_vibrate_kind_summary">設定 Touch Controller 模組振動時的振動類型</string>
     <string name="versions_config_vibrate_duration_title">振動時長</string>
     <string name="versions_config_vibrate_duration_summary">設定 Touch Controller 模組要求的裝置振動時長</string>
     <string name="versions_config_follow_global_if_blank">留白則跟隨全域設定</string>
@@ -1192,6 +1194,12 @@
     <string name="control_editor_special_joystick_style_joystick_size">搖桿大小</string>
     <string name="control_editor_exit_message">您確定要直接退出嗎？這將導致您的任何變更都無法被儲存。若需要儲存，請檢查編輯器選單。</string>
     <string name="control_editor_exit_confirm">直接退出</string>
+
+    <string name="vibrate_kind_one_shot">持續</string>
+    <string name="vibrate_kind_click">單擊</string>
+    <string name="vibrate_kind_double_click">雙擊</string>
+    <string name="vibrate_kind_heavy_click">重擊</string>
+    <string name="vibrate_kind_tick">滴答</string>
 
     <string name="festivals_new_year">新年快樂！</string>
     <string name="festivals_april_fools">愚人節快樂！</string>

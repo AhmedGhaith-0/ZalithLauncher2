@@ -25,7 +25,6 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.net.Uri
-import android.util.Base64
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -52,18 +51,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.outlined.Checkroom
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material.icons.outlined.Link
@@ -107,12 +109,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.graphics.createBitmap
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.account.Account
 import com.movtery.zalithlauncher.game.account.AccountType
@@ -129,14 +133,15 @@ import com.movtery.zalithlauncher.game.account.wardrobe.EmptyCape
 import com.movtery.zalithlauncher.game.account.wardrobe.SkinModelType
 import com.movtery.zalithlauncher.game.account.wardrobe.capeLocalRes
 import com.movtery.zalithlauncher.game.account.yggdrasil.PlayerProfile
+import com.movtery.zalithlauncher.game.account.yggdrasil.findUsing
 import com.movtery.zalithlauncher.game.account.yggdrasil.getFile
-import com.movtery.zalithlauncher.game.account.yggdrasil.isUsing
 import com.movtery.zalithlauncher.info.InfoDistributor
 import com.movtery.zalithlauncher.path.PathManager
 import com.movtery.zalithlauncher.path.URL_MINECRAFT_PURCHASE
 import com.movtery.zalithlauncher.ui.components.BaseIconTextButton
 import com.movtery.zalithlauncher.ui.components.IconTextButton
 import com.movtery.zalithlauncher.ui.components.MarqueeText
+import com.movtery.zalithlauncher.ui.components.ModelAnimation
 import com.movtery.zalithlauncher.ui.components.OwnOutlinedTextField
 import com.movtery.zalithlauncher.ui.components.PlayerSkin
 import com.movtery.zalithlauncher.ui.components.SimpleAlertDialog
@@ -153,6 +158,13 @@ import java.io.IOException
 import java.nio.file.Files
 import java.util.regex.Pattern
 import kotlin.math.roundToInt
+
+/** 账号登录菜单操作状态 */
+sealed interface LoginMenuOperation {
+    data object None : LoginMenuOperation
+    /** 呼出登陆账号菜单，将所有登录方式放到一个对话框中展示 */
+    data object Login : LoginMenuOperation
+}
 
 /**
  * 微软登录的操作状态
@@ -293,7 +305,8 @@ fun PlayerFace(
     refreshKey: Any? = null
 ) {
     val context = LocalContext.current
-    val avatarBitmap = remember(account, refreshKey, AccountsManager.refreshAccountAvatar) {
+    val refreshWardrobe by AccountsManager.refreshWardrobe.collectAsStateWithLifecycle()
+    val avatarBitmap = remember(account, refreshKey, refreshWardrobe) {
         getSkinAvatarFromAccount(context, account, avatarSize).asImageBitmap()
     }
 
@@ -422,59 +435,174 @@ fun AccountItem(
 }
 
 @Composable
-fun LoginItem(
-    modifier: Modifier = Modifier,
-    serverName: String,
-    onClick: () -> Unit = {}
+fun LoginMenuDialog(
+    onDismissRequest: () -> Unit,
+    onMicrosoftLogin: () -> Unit,
+    onLocalLogin: () -> Unit,
+    authServers: List<AuthServer>,
+    onAuthServerLogin: (server: AuthServer) -> Unit,
+    onAddAuthServer: () -> Unit,
+    onDeleteAuthServer: (server: AuthServer) -> Unit,
 ) {
-    Row(
-        modifier = modifier
-            .clip(shape = MaterialTheme.shapes.large)
-            .clickable(onClick = onClick)
-            .padding(PaddingValues(horizontal = 4.dp, vertical = 12.dp)),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        Icon(
-            modifier = Modifier.size(24.dp),
-            imageVector = Icons.Default.Add,
-            contentDescription = serverName
-        )
-        Text(
-            modifier = Modifier.align(Alignment.CenterVertically),
-            text = serverName,
-            style = MaterialTheme.typography.labelLarge
+        BoxWithConstraints(
+            modifier = Modifier
+                .padding(all = 16.dp)
+                .fillMaxHeight()
+                .fillMaxWidth(0.6f),
+            contentAlignment = Alignment.Center
+        ) {
+            Surface(
+                modifier = Modifier
+                    .padding(all = 6.dp)
+                    .fillMaxWidth()
+                    .heightIn(max = maxHeight - 12.dp),
+                shape = MaterialTheme.shapes.extraLarge,
+                shadowElevation = 6.dp
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .weight(1f, fill = false)
+                            .fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .verticalScroll(rememberScrollState())
+                                .padding(vertical = 12.dp)
+                                .padding(start = 12.dp, end = 6.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            //微软登录
+                            LoginItem(
+                                modifier = Modifier.fillMaxWidth(),
+                                title = stringResource(R.string.account_type_microsoft),
+                                onClick = {
+                                    onMicrosoftLogin()
+                                    onDismissRequest()
+                                }
+                            )
+                            //离线登录
+                            LoginItem(
+                                modifier = Modifier.fillMaxWidth(),
+                                title = stringResource(R.string.account_type_local),
+                                onClick = {
+                                    onLocalLogin()
+                                    onDismissRequest()
+                                }
+                            )
+                        }
+
+                        LazyColumn(
+                            modifier = Modifier.weight(1f),
+                            contentPadding = PaddingValues(start = 6.dp, top = 12.dp, end = 12.dp, bottom = 12.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            item {
+                                //添加认证服务器
+                                InfoLayoutTextItem(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    title = stringResource(R.string.account_add_new_server_button),
+                                    showArrow = true,
+                                    onClick = {
+                                        onAddAuthServer()
+                                        onDismissRequest()
+                                    }
+                                )
+                            }
+
+                            items(authServers) { server ->
+                                LoginItem(
+                                    title = server.serverName,
+                                    icon = {
+                                        IconButton(
+                                            modifier = Modifier.size(22.dp),
+                                            onClick = {
+                                                onDeleteAuthServer(server)
+                                            }
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Outlined.Delete,
+                                                contentDescription = stringResource(R.string.generic_delete)
+                                            )
+                                        }
+                                    },
+                                    onClick = {
+                                        onAuthServerLogin(server)
+                                        onDismissRequest()
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp)
+                            .padding(bottom = 8.dp),
+                        onClick = onDismissRequest
+                    ) {
+                        Text(stringResource(R.string.generic_close))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 800, heightDp = 480)
+@Composable
+private fun PreviewLoginMenuDialog() {
+    MaterialTheme {
+        LoginMenuDialog(
+            onDismissRequest = {},
+            onMicrosoftLogin = {},
+            onLocalLogin = {},
+            authServers = emptyList(),
+            onAuthServerLogin = {},
+            onAddAuthServer = {},
+            onDeleteAuthServer = {}
         )
     }
 }
 
 @Composable
-fun ServerItem(
+fun LoginItem(
     modifier: Modifier = Modifier,
-    server: AuthServer,
-    onClick: () -> Unit = {},
-    onDeleteClick: () -> Unit = {}
-) {
-    Row(
-        modifier = modifier
-            .clip(shape = MaterialTheme.shapes.large)
-            .clickable(onClick = onClick)
-            .padding(start = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Text(
-            modifier = Modifier
-                .weight(1f)
-                .align(Alignment.CenterVertically),
-            text = server.serverName,
-            style = MaterialTheme.typography.labelLarge
+    title: String,
+    icon: @Composable () -> Unit = @Composable {
+        Icon(
+            modifier = Modifier.size(22.dp),
+            imageVector = Icons.AutoMirrored.Default.Login,
+            contentDescription = null
         )
-        IconButton(
-            onClick = onDeleteClick
-        ) {
-            Icon(
-                modifier = Modifier.size(24.dp),
-                imageVector = Icons.Filled.Delete,
-                contentDescription = stringResource(R.string.generic_delete)
+    },
+    onClick: () -> Unit
+) {
+    InfoLayoutTextItem(
+        modifier = modifier,
+        title = title,
+        icon = icon,
+        onClick = onClick
+    )
+}
+
+@Preview(showBackground = true, widthDp = 400, heightDp = 120)
+@Composable
+private fun PreviewLoginItem() {
+    MaterialTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            LoginItem(
+                modifier = Modifier.fillMaxWidth().padding(all = 32.dp),
+                title = stringResource(R.string.account_type_microsoft),
+                onClick = {}
             )
         }
     }
@@ -1105,7 +1233,7 @@ fun ChangeSkinDialog(
         if (account.isMicrosoftAccount()) {
             if (availableCapes.isNotEmpty()) {
                 isFetchingCapes = false
-                val currentUsingCape0 = availableCapes.find { it.isUsing() } ?: EmptyCape
+                val currentUsingCape0 = availableCapes.findUsing() ?: EmptyCape
                 currentUsingCape = currentUsingCape0
                 currentCapeToLoad = currentUsingCape0
             } else {
@@ -1149,7 +1277,7 @@ fun ChangeSkinDialog(
         BoxWithConstraints(
             modifier = Modifier
                 .padding(all = 16.dp)
-                .fillMaxHeight()
+                .fillMaxHeight(0.85f)
                 .fillMaxWidth(0.6f),
             contentAlignment = Alignment.Center
         ) {
@@ -1191,32 +1319,24 @@ fun ChangeSkinDialog(
                                         context = context,
                                         onPageFinished = {
                                             pageFinished = true
+                                            playerSkin.startAnim(ModelAnimation.Walking, 0.8f)
+                                            playerSkin.setAzimuthAndPitch(0, 10, 50)
                                         }
                                     )
                                 },
-                                update = { webView ->
+                                update = {
                                     val skinData = pendingSkinData
 
                                     if (pageFinished) {
                                         when (skinData) {
                                             is ChangeSkin.ChangeSkinData -> {
                                                 runCatching {
-                                                    context.contentResolver.openInputStream(skinData.skinUri).use { inputStream ->
-                                                        val bytes = inputStream?.readBytes()
-                                                        if (bytes != null) {
-                                                            val base64 = Base64.encodeToString(
-                                                                bytes,
-                                                                Base64.NO_WRAP
-                                                            )
-                                                            val dataUrl = "data:image/png;base64,$base64"
-                                                            val modelString = skinData.skinModel.modelType
-                                                                .takeIf { it.isNotEmpty() } ?: "auto-detect"
-                                                            webView.evaluateJavascript(
-                                                                "loadSkinFromData('$dataUrl', '$modelString')",
-                                                                null
-                                                            )
+                                                    context.contentResolver.openInputStream(skinData.skinUri)
+                                                        .use { inputStream ->
+                                                            playerSkin.loadSkin(inputStream, skinData.skinModel)
                                                         }
-                                                    }
+                                                }.onFailure {
+                                                    playerSkin.loadSkin(skinId = null, skinData.skinModel)
                                                 }
                                             }
                                             is ChangeSkin.ResetSkin -> resetSkin()

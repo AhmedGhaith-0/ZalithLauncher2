@@ -656,6 +656,8 @@
     <string name="versions_config_auto_join_server_ip_summary">在这里填入服务器 IP，启动游戏后将自动加入目标服务器。例如 114.514.114.514:114514</string>
     <string name="versions_config_enable_touch_proxy_title">启用控制代理</string>
     <string name="versions_config_enable_touch_proxy_summary">启用为支持 Touch Controller 模组准备的控制代理</string>
+    <string name="versions_config_vibrate_kind_title">振动类型</string>
+    <string name="versions_config_vibrate_kind_summary">设置 Touch Controller 模组振动时的振动类型</string>
     <string name="versions_config_vibrate_duration_title">振动时长</string>
     <string name="versions_config_vibrate_duration_summary">设置 Touch Controller 模组要求设备的振动时长</string>
     <string name="versions_config_follow_global_if_blank">留白则跟随全局设置</string>
@@ -1195,6 +1197,12 @@
     <!--  Url  -->
     <string name="url_wiki_minecraft_game_release">https://zh.minecraft.wiki/w/Java%%E7%%89%%88%s?variant=zh-cn</string>
     <string name="url_wiki_minecraft_game_snapshot">https://zh.minecraft.wiki/w/%s?variant=zh-cn</string>
+    <!-- Vibration Kind -->
+    <string name="vibrate_kind_one_shot">持续</string>
+    <string name="vibrate_kind_click">单击</string>
+    <string name="vibrate_kind_double_click">双击</string>
+    <string name="vibrate_kind_heavy_click">重击</string>
+    <string name="vibrate_kind_tick">滴答</string>
 
     <string name="festivals_new_year">新年快乐！</string>
     <string name="festivals_april_fools">愚人节快乐！</string>

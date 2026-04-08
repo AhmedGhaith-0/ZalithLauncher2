@@ -19,9 +19,6 @@
 package com.movtery.zalithlauncher.game.account
 
 import android.content.Context
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.coroutine.Task
 import com.movtery.zalithlauncher.coroutine.TaskSystem
@@ -36,6 +33,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apache.commons.io.FileUtils
 import java.util.concurrent.CopyOnWriteArrayList
@@ -56,9 +54,9 @@ object AccountsManager {
     private val _authServersFlow = MutableStateFlow<List<AuthServer>>(emptyList())
     val authServersFlow = _authServersFlow.asStateFlow()
 
-    /** 控制刷新所有账号头像的变量 */
-    var refreshAccountAvatar by mutableStateOf(false)
-        private set
+    private val _refreshWardrobe = MutableStateFlow(false)
+    /** 控制刷新所有账号衣橱 */
+    val refreshWardrobe = _refreshWardrobe.asStateFlow()
 
     private lateinit var database: AppDatabase
     private lateinit var accountDao: AccountDao
@@ -83,10 +81,10 @@ object AccountsManager {
     }
 
     /**
-     * 刷新所有账号的头像
+     * 刷新所有账号的衣橱
      */
-    fun refreshAccountsAvatar() {
-        this.refreshAccountAvatar = !this.refreshAccountAvatar
+    fun refreshWardrobe() {
+        _refreshWardrobe.update { !it }
     }
 
     private suspend fun suspendReloadAccounts() {
@@ -173,7 +171,7 @@ object AccountsManager {
                 account = account,
                 onSuccess = { account, task ->
                     task.updateMessage(R.string.account_logging_in_saving)
-                    account.downloadSkin()
+                    account.downloadYggdrasil()
                     suspendSaveAccount(account)
                 },
                 onFailed = onFailed

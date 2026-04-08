@@ -81,7 +81,6 @@ class LauncherUpgradeViewModel: ViewModel() {
         lastCheckTime: Long
     ): Boolean {
         val currentTime = System.currentTimeMillis()
-        println("ABCD: currentTime = $currentTime, lastCheckTime = $lastCheckTime")
         if (lastCheckTime > currentTime) {
             //用户调整到了未来的时间，无法正常判断
             //直接允许进行检查

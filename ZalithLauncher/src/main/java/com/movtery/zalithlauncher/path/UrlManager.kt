@@ -34,7 +34,7 @@ import okhttp3.RequestBody
 import java.util.concurrent.TimeUnit
 
 const val URL_USER_AGENT: String = "${InfoDistributor.LAUNCHER_SHORT_NAME}/Android_${BuildConfig.VERSION_NAME}"
-val TIME_OUT = Pair(10000, TimeUnit.MILLISECONDS)
+val TIME_OUT = TimeUnit.SECONDS.toMillis(30L)
 const val URL_MCMOD: String = "https://www.mcmod.cn/"
 const val URL_MINECRAFT_VERSION_REPOS: String = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json"
 const val URL_MINECRAFT_ASSETS_INDEX: String = "https://launchermeta.mojang.com/v1/packages"
@@ -54,7 +54,7 @@ val GLOBAL_JSON = Json {
 
 val GLOBAL_CLIENT = HttpClient(CIO) {
     install(HttpTimeout) {
-        requestTimeoutMillis = TIME_OUT.first.toLong()
+        requestTimeoutMillis = TIME_OUT
     }
     install(ContentNegotiation) {
         json(GLOBAL_JSON)
@@ -85,6 +85,6 @@ fun createOkHttpClient(): OkHttpClient = createOkHttpClientBuilder().build()
  */
 fun createOkHttpClientBuilder(action: (OkHttpClient.Builder) -> Unit = { }): OkHttpClient.Builder {
     return OkHttpClient.Builder()
-        .callTimeout(TIME_OUT.first.toLong(), TIME_OUT.second)
+        .callTimeout(TIME_OUT, TimeUnit.MILLISECONDS)
         .apply(action)
 }

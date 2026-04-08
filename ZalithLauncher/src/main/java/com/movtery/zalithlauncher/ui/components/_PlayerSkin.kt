@@ -20,6 +20,11 @@ package com.movtery.zalithlauncher.ui.components
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Base64
+import android.util.Log
+import android.webkit.ConsoleMessage
+import android.webkit.JsResult
+import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
@@ -32,6 +37,7 @@ import com.movtery.zalithlauncher.game.account.wardrobe.SkinModelType
 import com.movtery.zalithlauncher.game.account.yggdrasil.PlayerProfile
 import com.movtery.zalithlauncher.path.PathManager
 import java.io.File
+import java.io.InputStream
 
 @SuppressLint("SetJavaScriptEnabled")
 class PlayerSkin(
@@ -91,6 +97,21 @@ class PlayerSkin(
                     onPageFinished()
                 }
             }
+            webChromeClient = object : WebChromeClient() {
+                override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
+                    Log.d(
+                        "WebViewConsole", (consoleMessage.message()
+                                + " (line " + consoleMessage.lineNumber() + ")")
+                    )
+                    return true
+                }
+
+                override fun onJsAlert(view: WebView?, url: String?, message: String, result: JsResult): Boolean {
+                    Log.d("WebViewAlert", message)
+                    result.confirm()
+                    return true
+                }
+            }
 
             loadUrl(skinView)
         }
@@ -109,6 +130,15 @@ class PlayerSkin(
         webview?.evaluateJavascript("loadSkin('$jsUrl', '$modelString')", null)
     }
 
+    fun loadSkin(inputStream: InputStream?, model: SkinModelType) {
+        inputStream?.asBase64Image()?.let { dataUrl ->
+            val modelString = model.takeIf { it != SkinModelType.NONE }?.modelType ?: "auto-detect"
+            webview?.evaluateJavascript("loadSkin('$dataUrl', '$modelString')", null)
+        } ?: run {
+            loadSkin(skinId = null, model)
+        }
+    }
+
     fun loadCape(cape: PlayerProfile.Cape?) {
         val path = cape?.takeIf { it != EmptyCape }?.id?.let { id ->
             AssetsUrlBuilder()
@@ -117,16 +147,56 @@ class PlayerSkin(
                 .toString()
         }
         val jsUrl = path?.let { "'$it'" } ?: "null"
+        webview?.evaluateJavascript("loadCape($jsUrl)", null)
+    }
+
+    fun loadCape(inputStream: InputStream?) {
+        inputStream?.asBase64Image()?.let { dataUrl ->
+            webview?.evaluateJavascript("loadCape('$dataUrl')", null)
+        } ?: run {
+            loadCape(cape = null)
+        }
+    }
+
+    fun resetSkin() {
+        loadSkin(skinId = null, SkinModelType.NONE)
+        loadCape(cape = null)
+    }
+
+    fun startAnim(
+        animation: ModelAnimation,
+        speed: Float? = null
+    ) {
         webview?.evaluateJavascript(
-            "loadCape($jsUrl)",
+            "startAnim('${animation.name}', $speed)",
             null
         )
     }
 
-    fun resetSkin() {
-        loadSkin(null, SkinModelType.NONE)
-        loadCape(null)
+    fun setAzimuthAndPitch(azimuthDeg: Int, pitchDeg: Int, distance: Int = 60) {
+        webview?.evaluateJavascript(
+            "setAzimuthAndPitch($azimuthDeg, $pitchDeg, $distance)",
+            null
+        )
     }
+
+    private fun InputStream.asBase64Image(): String {
+        return readBytes().let { bytes ->
+            val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
+            "data:image/png;base64,$base64"
+        }
+    }
+}
+
+enum class ModelAnimation {
+    DefaultIdle,
+    NewIdle,
+    Walking,
+    Running,
+    Flying,
+    Wave,
+    Crouch,
+    Hit
 }
 
 private class AssetsUrlBuilder {

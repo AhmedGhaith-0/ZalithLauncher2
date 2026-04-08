@@ -80,6 +80,11 @@ fun PlayerProfile.Cape.isUsing(): Boolean = this.state == "ACTIVE"
 fun List<PlayerProfile.Skin>.findUsing(): PlayerProfile.Skin? = this.find { it.isUsing() }
 
 /**
+ * 查找玩家当前正在使用的披风
+ */
+fun List<PlayerProfile.Cape>.findUsing(): PlayerProfile.Cape? = this.find { it.isUsing() }
+
+/**
  * 获取玩家皮肤模型类型
  */
 fun PlayerProfile.Skin.getSkinModel(): SkinModelType {
