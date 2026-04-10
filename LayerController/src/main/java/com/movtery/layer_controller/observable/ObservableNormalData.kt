@@ -63,14 +63,13 @@ class ObservableNormalData(data: NormalData) : ObservableWidget() {
         eventHandler: EventHandler,
         allLayers: List<ObservableControlLayer>
     ) {
+        val result = if (isPressed && !isToggleable) {
+            false
+        } else {
+            isPressed = if (isToggleable) !isPressed else true
+            true
+        }
         eventHandler.onKeyPressed(clickEvents, isPressed) { event ->
-            val result = if (isPressed && !isToggleable) {
-                false
-            } else {
-                isPressed = if (isToggleable) !isPressed else true
-                true
-            }
-
             eventHandler.onSwitchLayer(
                 clickEvent = event,
                 allLayers = allLayers,

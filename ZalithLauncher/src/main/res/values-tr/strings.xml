@@ -338,10 +338,6 @@
     <string name="account_label_email">E-posta veya Kullanıcı Adı</string>
     <string name="account_label_password">Şifre</string>
     <string name="account_change_skin">Skin Değiştir</string>
-    <string name="account_change_skin_select_model_title">Model Seç</string>
-    <string name="account_change_skin_select_model_message">Skin tipi Steve (geniş kol) mi Alex (ince kol) mu?</string>
-    <string name="account_change_skin_model_steve">Steve Modeli</string>
-    <string name="account_change_skin_model_alex">Alex Modeli</string>
     <string name="account_supporting_username_invalid_title">Geçersiz Kullanıcı Adı</string>
     <string name="account_supporting_username_invalid_local_message_hint1">Geçerli kullanıcı adları harf, sayı ve alt çizgi içerir (3–16 karakter).</string>
     <string name="account_supporting_username_invalid_local_message_hint2">Aksi halde oyun düzgün çalışmaz.</string>
@@ -1055,9 +1051,6 @@
     <string name="crash_link_share_failed_link_not_found">Uygun bir bağlantı bulunamadı. Lütfen daha sonra deneyin.</string>
     <string name="download_game_addon_warning_api">%s seçili değil. Eğer indirmeden devam ederseniz, çoğu modlar çalışmayacak!</string>
     <string name="download_install_warning_mobile_data">Mobil Veri kullanıyorsunuz. İndirmeye devam etmek mobil verinizden alacaktır.</string>
-    <string name="game_input_proxy_mode_default">Gerçek Zamanlı Mod</string>
-    <string name="game_input_proxy_mode_simple">Basit Mod</string>
-    <string name="game_input_proxy_mode_send">Gönderme Modu</string>
     <string name="game_styles_joystick_lock_threshold">Joystick İleri Kilitleme Eşiği</string>
     <string name="game_saponsorship_finished_game">Başlatıcı oyunu %s kez başarıyla çalıştırdı! Eğer faydalı bulduysanız, lütfen geliştiriciyi desteklemeyi düşünün! :)</string>
     <string name="account_advanced">Gelişmiş Ayarlar</string>

@@ -18,9 +18,15 @@
 
 package com.movtery.zalithlauncher.ui.screens.content.download.assets.elements
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,11 +39,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowLeft
 import androidx.compose.material.icons.automirrored.rounded.ArrowRight
@@ -54,7 +63,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -66,6 +78,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -78,9 +91,11 @@ import com.movtery.zalithlauncher.game.download.assets.platform.PlatformSearchDa
 import com.movtery.zalithlauncher.game.download.assets.utils.ModTranslations
 import com.movtery.zalithlauncher.game.download.assets.utils.getMcmodTitle
 import com.movtery.zalithlauncher.ui.components.ScalingLabel
+import com.movtery.zalithlauncher.ui.components.SmallOutlinedEditField
 import com.movtery.zalithlauncher.ui.components.backgroundLayoutColor
 import com.movtery.zalithlauncher.utils.animation.getAnimateTween
 import com.movtery.zalithlauncher.utils.formatNumberByLocale
+import com.movtery.zalithlauncher.utils.string.isEmptyOrBlank
 
 sealed interface SearchAssetsState {
     data object Searching: SearchAssetsState
@@ -108,6 +123,7 @@ sealed interface SearchAssetsState {
 /**
  * 资源搜索结果展示列表
  * @param swapToDownload 跳转到下载详情页
+ * @param onNavigatePage 导航到指定页面
  */
 @Composable
 fun ResultListLayout(
@@ -120,6 +136,7 @@ fun ResultListLayout(
     onReload: () -> Unit = {},
     onPreviousPage: (pageNumber: Int) -> Unit,
     onNextPage: (pageNumber: Int, isLastPage: Boolean) -> Unit,
+    onNavigatePage: (Int) -> Unit,
     swapToDownload: (Platform, projectId: String, iconUrl: String?) -> Unit = { _, _, _ -> }
 ) {
     when (val state = searchState) {
@@ -182,7 +199,8 @@ fun ResultListLayout(
                         },
                         onNextPage = {
                             onNextPage(page.pageNumber, page.isLastPage)
-                        }
+                        },
+                        onNavigatePage = onNavigatePage,
                     )
                 }
             }
@@ -213,8 +231,74 @@ private fun PageController(
     color: Color = backgroundLayoutColor(),
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
     onPreviousPage: () -> Unit,
-    onNextPage: () -> Unit
+    onNextPage: () -> Unit,
+    onNavigatePage: (Int) -> Unit
 ) {
+    var editPageNumber by remember {
+        mutableStateOf(false)
+    }
+
+    @Composable
+    fun PageNumber(modifier: Modifier = Modifier) {
+        Box(
+            modifier = modifier,
+            contentAlignment = Alignment.CenterStart
+        ) {
+            AnimatedVisibility(
+                visible = editPageNumber,
+                enter = expandHorizontally() + fadeIn(),
+                exit = shrinkHorizontally() + fadeOut(),
+            ) {
+                var number by remember { mutableIntStateOf(page.pageNumber) }
+                var numberText by remember { mutableStateOf("${page.pageNumber}") }
+                //编辑页码
+                SmallOutlinedEditField(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(vertical = 2.dp)
+                        .padding(start = 2.dp, end = 8.dp)
+                        .width(72.dp),
+                    value = numberText,
+                    onValueChange = onValueChange@ { value ->
+                        val number0 = if (value.isEmptyOrBlank()) {
+                            1 //为了编辑体验，留空时视为1
+                        } else {
+                            value.toIntOrNull() ?: return@onValueChange
+                        }
+                        number = number0.coerceIn(1, page.totalPage)
+                        numberText = if (value.isEmptyOrBlank()) value else number.toString()
+                    },
+                    shape = MaterialTheme.shapes.medium,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            if (number != page.pageNumber) {
+                                onNavigatePage(number)
+                            }
+                            editPageNumber = false
+                        }
+                    ),
+                    singleLine = true
+                )
+            }
+
+            //页码
+            AnimatedVisibility(
+                visible = !editPageNumber,
+                enter = expandHorizontally() + fadeIn(),
+                exit = shrinkHorizontally() + fadeOut(),
+            ) {
+                Text(
+                    modifier = Modifier.padding(start = 16.dp),
+                    text = "${page.pageNumber} ",
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
+        }
+    }
+
     Surface(
         modifier = modifier,
         shape = shape,
@@ -225,15 +309,30 @@ private fun PageController(
             modifier = Modifier.padding(all = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                text = "${page.pageNumber} / ${page.totalPage}",
-                style = MaterialTheme.typography.labelLarge
-            )
+            Row(
+                modifier = Modifier
+                    .clickable(enabled = !editPageNumber) {
+                        editPageNumber = true
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                PageNumber(
+                    modifier = Modifier.fillMaxHeight()
+                )
+
+                Text(
+                    modifier = Modifier.padding(end = 16.dp),
+                    text = "/ ${page.totalPage}",
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
 
             IconButton(
                 enabled = page.pageNumber > 1, //不是第一页
-                onClick = onPreviousPage
+                onClick = {
+                    onPreviousPage()
+                    editPageNumber = false
+                }
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowLeft,
@@ -243,7 +342,10 @@ private fun PageController(
 
             IconButton(
                 enabled = !page.isLastPage, //不是最后一页
-                onClick = onNextPage
+                onClick = {
+                    onNextPage()
+                    editPageNumber = false
+                }
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowRight,

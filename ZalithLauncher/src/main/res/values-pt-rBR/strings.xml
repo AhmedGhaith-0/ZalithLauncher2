@@ -346,9 +346,6 @@
     <string name="game_button_log_output">Saída de Log</string>
     <string name="game_button_mouse_left">Clique Esquerdo</string>
     <string name="game_button_mouse_right">Clique Direito</string>
-    <string name="game_input_proxy_mode_default">Modo em tempo real</string>
-    <string name="game_input_proxy_mode_simple">Modo simples</string>
-    <string name="game_input_proxy_mode_send">Modo de envio</string>
     <string name="game_menu_option_replacement_control">Mudar layout do HUD</string>
     <string name="game_menu_option_controls_opacity">Opacidade do HUD</string>
     <string name="game_styles_joystick_edit_use_control_layout">Usar estilo fornecido pelo layout de controle</string>
@@ -434,10 +431,6 @@
     <string name="account_label_email">Email ou nome de usuário</string>
     <string name="account_label_password">Senha</string>
     <string name="account_change_skin">Alterar Skin</string>
-    <string name="account_change_skin_select_model_title">Selecione o modelo da skin</string>
-    <string name="account_change_skin_select_model_message">Esta skin é do Steve (braços largos) ou da Alex (braços finos)?</string>
-    <string name="account_change_skin_model_steve">Modelo do Steve</string>
-    <string name="account_change_skin_model_alex">Modelo da Alex</string>
     <string name="account_change_skin_failed_to_import">Falha ao armazenar em cache o arquivo de destino</string>
     <string name="account_change_skin_invalid">Tamanho de pixel da pele inválido, deve ser 64x32 pixels ou 64x64 pixels</string>
     <string name="account_change_skin_uploading">Enviando arquivo de skin</string>

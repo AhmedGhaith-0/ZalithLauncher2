@@ -376,9 +376,6 @@
     <string name="game_button_log_output">日志输出</string>
     <string name="game_button_mouse_left">鼠标左键</string>
     <string name="game_button_mouse_right">鼠标右键</string>
-    <string name="game_input_proxy_mode_default">实时模式</string>
-    <string name="game_input_proxy_mode_simple">简单模式</string>
-    <string name="game_input_proxy_mode_send">发送模式</string>
     <string name="game_dialog_force_close_message">您确定要强制关闭，并返回主界面吗？</string>
     <string name="game_loading">游戏正在运行，等待游戏画面出现中</string>
     <string name="game_loading_version_name">游戏版本：%s</string>
@@ -451,10 +448,9 @@
     <string name="account_label_email">填写邮箱或用户名</string>
     <string name="account_label_password">填写密码</string>
     <string name="account_change_skin">更换皮肤</string>
-    <string name="account_change_skin_select_model_title">选择皮肤模型</string>
-    <string name="account_change_skin_select_model_message">该皮肤是 Steve 模型（粗臂）还是 Alex 模型（细臂）？</string>
-    <string name="account_change_skin_model_steve">Steve 模型</string>
-    <string name="account_change_skin_model_alex">Alex 模型</string>
+    <string name="account_change_skin_arm_style">手臂样式</string>
+    <string name="account_change_skin_arm_wide">粗臂</string>
+    <string name="account_change_skin_arm_slim">细臂</string>
     <string name="account_change_skin_failed_to_import">无法缓存目标文件</string>
     <string name="account_change_skin_invalid">皮肤像素尺寸无效，应为 64x32 像素或 64x64 像素</string>
     <string name="account_change_skin_uploading">上传皮肤文件中</string>
@@ -656,6 +652,8 @@
     <string name="versions_config_auto_join_server_ip_summary">在这里填入服务器 IP，启动游戏后将自动加入目标服务器。例如 114.514.114.514:114514</string>
     <string name="versions_config_enable_touch_proxy_title">启用控制代理</string>
     <string name="versions_config_enable_touch_proxy_summary">启用为支持 Touch Controller 模组准备的控制代理</string>
+    <string name="versions_config_vibrate_kind_title">振动类型</string>
+    <string name="versions_config_vibrate_kind_summary">设置 Touch Controller 模组振动时的振动类型</string>
     <string name="versions_config_vibrate_duration_title">振动时长</string>
     <string name="versions_config_vibrate_duration_summary">设置 Touch Controller 模组要求设备的振动时长</string>
     <string name="versions_config_follow_global_if_blank">留白则跟随全局设置</string>
@@ -1195,6 +1193,12 @@
     <!--  Url  -->
     <string name="url_wiki_minecraft_game_release">https://zh.minecraft.wiki/w/Java%%E7%%89%%88%s?variant=zh-cn</string>
     <string name="url_wiki_minecraft_game_snapshot">https://zh.minecraft.wiki/w/%s?variant=zh-cn</string>
+    <!-- Vibration Kind -->
+    <string name="vibrate_kind_one_shot">持续</string>
+    <string name="vibrate_kind_click">单击</string>
+    <string name="vibrate_kind_double_click">双击</string>
+    <string name="vibrate_kind_heavy_click">重击</string>
+    <string name="vibrate_kind_tick">滴答</string>
 
     <string name="festivals_new_year">新年快乐！</string>
     <string name="festivals_april_fools">愚人节快乐！</string>

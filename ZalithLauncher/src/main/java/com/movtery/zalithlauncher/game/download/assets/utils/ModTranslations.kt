@@ -23,6 +23,9 @@ import com.movtery.zalithlauncher.game.download.assets.utils.ModTranslations.MOD
 import com.movtery.zalithlauncher.game.download.assets.utils.ModTranslations.MODPACK
 import com.movtery.zalithlauncher.path.URL_MCMOD
 import com.movtery.zalithlauncher.utils.logging.Logger.lWarning
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 import kotlin.math.max
 
 /**
@@ -59,17 +62,33 @@ enum class ModTranslations(private val resourceName: String) {
 
     abstract fun getMcmodUrl(mcMod: McMod): String
 
-    fun searchMod(query: String): List<McMod> {
+    suspend fun searchMod(query: String): List<McMod> {
         if (!loadKeywords()) return emptyList()
         val newQuery = query.filterNot(Char::isWhitespace)
         val lcs = LongestCommonSubsequence(newQuery.length, maxKeywordLength)
 
-        return keywords!!.asSequence()
-            .map { (keyword, mod) -> lcs.calc(newQuery, keyword) to mod }
-            .filter { (value) -> value >= max(1, newQuery.length - 3) }
-            .sortedByDescending { it.first }
-            .map { it.second }
-            .toList()
+        return withContext(Dispatchers.Default) {
+            fun <T> ensureActive(
+                block: () -> T
+            ): T {
+                ensureActive()
+                return block()
+            }
+            keywords!!.asSequence()
+                .map { (keyword, mod) ->
+                    ensureActive { lcs.calc(newQuery, keyword) to mod }
+                }
+                .filter { (value) ->
+                    ensureActive { value >= max(1, newQuery.length - 3) }
+                }
+                .sortedByDescending {
+                    ensureActive { it.first }
+                }
+                .map {
+                    ensureActive { it.second }
+                }
+                .toList()
+        }
     }
 
     private fun loadFromResource(): Boolean {

@@ -41,7 +41,11 @@ object ControllerProxy {
     /**
      * 启动控制代理客户端，目的是与 TouchController 模组进行通信
      */
-    fun startProxy(context: Context, vibrateDuration: Int?) {
+    fun startProxy(
+        context: Context,
+        vibrateDuration: Int?,
+        vibrateKind: VibrationHandler.VibrateKind?,
+    ) {
         if (proxyClient.value == null) {
             try {
                 val transport = UnixSocketTransport(InfoDistributor.LAUNCHER_NAME)
@@ -51,7 +55,7 @@ object ControllerProxy {
                     capabilities = setOf(PlatformCapability.TEXT_STATUS),
                 )
                 val vibrator = context.getSystemService(Vibrator::class.java)
-                val handler = VibrationHandler(vibrator, vibrateDuration)
+                val handler = VibrationHandler(vibrator, vibrateDuration, vibrateKind)
                 client.vibrationHandler = handler
                 client.run()
                 LoggerBridge.append("TouchController: TouchController Proxy Client has been created!")

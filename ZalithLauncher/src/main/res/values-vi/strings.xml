@@ -332,10 +332,6 @@
     <string name="account_label_email">Email hoặc tên tài khoản</string>
     <string name="account_label_password">Mật khẩu</string>
     <string name="account_change_skin">Đổi skin</string>
-    <string name="account_change_skin_select_model_title">Chọn model cho skin</string>
-    <string name="account_change_skin_select_model_message">Skin này là Steve (tay to) hay Alex (tay nhỏ)?</string>
-    <string name="account_change_skin_model_steve">Mô hình Steve</string>
-    <string name="account_change_skin_model_alex">Mô hình Alex</string>
     <string name="account_supporting_username_invalid_title">Tên người dùng không hợp lệ</string>
     <string name="account_supporting_username_invalid_local_message_hint1">Tên người dùng hợp lệ chỉ hỗ trợ chữ cái (không phân biệt chữ hoa chữ thường), số và dấu gạch dưới, có độ dài từ 3 đến 16 ký tự.</string>
     <string name="account_supporting_username_invalid_local_message_hint2">Nếu không, trò chơi có thể không chạy đúng cách.</string>

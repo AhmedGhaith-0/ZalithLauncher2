@@ -255,7 +255,6 @@
     <string name="account_logging_in_failed">Erro ao fazer login</string>
     <string name="account_add_new_account">Adicionar conta</string>
     <string name="account_change_skin">Alterar Skin</string>
-    <string name="account_change_skin_select_model_title">Escolher modelo de skin</string>
     <string name="account_supporting_microsoft_tip_link_purchase">Comprar Minecraft</string>
     <string name="account_delete_title">Apagar conta</string>
     <string name="account_local_create_account">Criar Conta Offline</string>
@@ -324,8 +323,6 @@
     <string name="game_auto_pick_runtime_failed">Nenhum iniciador encontrado. Usando o iniciador da versão instalada.</string>
     <string name="game_menu_title">Menu do jogo</string>
     <string name="account_add_new_server_button">Adicionar conta Auth</string>
-    <string name="account_change_skin_model_steve">Modelo do Steve</string>
-    <string name="account_change_skin_model_alex">Modelo da Alex</string>
     <string name="account_supporting_username_invalid_title">Nome de usuário inválido</string>
     <string name="account_supporting_username_invalid_still_use">Usar de qualquer maneira</string>
     <string name="account_supporting_username_invalid_empty">Nome de usuário necessário</string>
@@ -380,7 +377,6 @@
     <string name="account_logging_xbox_banned">Sua conta foi banida por violar os Padrões da Comunidade Xbox e não pode ser usada!</string>
     <string name="account_logging_xbox_restricted">Sua conta foi restrita. O guardião/responsável não autoriza jogos online.</string>
     <string name="account_logging_xbox_unregistered">Sua conta não criou um perfil Xbox. Por favor, acesse https://signup.live.com/signup para registrar.</string>
-    <string name="account_change_skin_select_model_message">Essa é uma skin Steve (braços grandes) ou Alex (braços pequenos)?</string>
     <string name="account_supporting_username_invalid_local_message_hint1">Nomes de usuário válidos apenas aceitam letras (sem distinção de maiúsculas), números, sublinhado, e possuem tamanho de 3 a 16 caracteres.</string>
     <string name="account_supporting_username_invalid_local_message_hint2">Caso contrário, o jogo pode não iniciar adequadamente.</string>
     <string name="account_supporting_username_invalid_local_message_hint3">Nomes de usuário válidos: Name, Name_, Name123</string>

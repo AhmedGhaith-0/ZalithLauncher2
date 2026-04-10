@@ -337,9 +337,6 @@
     <string name="game_button_log_output">إخراج السجل</string>
     <string name="game_button_mouse_left">الزر الأيسر للماوس</string>
     <string name="game_button_mouse_right">الزر الايمن</string>
-    <string name="game_input_proxy_mode_default">الوضع في الوقت الحقيقي</string>
-    <string name="game_input_proxy_mode_simple">الوضع البسيط</string>
-    <string name="game_input_proxy_mode_send">وضع الإرسال</string>
     <string name="game_dialog_force_close_message">هل تريد حقًا إغلاق التطبيق بالقوة والعودة إلى الشاشة الرئيسية؟</string>
     <string name="game_loading">اللعبة قيد التشغيل، في انتظار ظهور شاشة اللعبة</string>
     <string name="game_loading_version_name">إصدار اللعبة: %s</string>
@@ -407,10 +404,6 @@
     <string name="account_label_email">البريد الإلكتروني أو اسم المستخدم</string>
     <string name="account_label_password">كلمة المرور</string>
     <string name="account_change_skin">تغيير المظهر</string>
-    <string name="account_change_skin_select_model_title">اختيار نموذج المظهر</string>
-    <string name="account_change_skin_select_model_message">هل هذا المظهر هو ستيف (أذرع عريضة) أم أليكس (أذرع نحيفة)؟</string>
-    <string name="account_change_skin_model_steve">نموذج ستيف</string>
-    <string name="account_change_skin_model_alex">نموذج أليكس</string>
     <string name="account_change_skin_failed_to_import">تعذر تخزين الملف الهدف</string>
     <string name="account_change_skin_invalid">حجم بكسلات المظهر غير صالح، يجب أن يكون 64x32 بكسل أو 64x64 بكسل</string>
     <string name="account_change_skin_uploading">جارِ رفع ملف المظهر</string>

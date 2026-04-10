@@ -25,6 +25,8 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -38,10 +40,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -56,20 +66,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.movtery.layer_controller.utils.animateShapeAsState
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.download.assets.platform.Platform
 import com.movtery.zalithlauncher.game.download.assets.platform.PlatformDisplayLabel
 import com.movtery.zalithlauncher.game.download.assets.platform.PlatformFilterCode
 import com.movtery.zalithlauncher.game.download.assets.platform.PlatformSortField
+import com.movtery.zalithlauncher.game.download.assets.utils.ModTranslations
 import com.movtery.zalithlauncher.game.versioninfo.MinecraftVersions
 import com.movtery.zalithlauncher.game.versioninfo.allGameVersions
 import com.movtery.zalithlauncher.ui.components.LittleTextLabel
@@ -84,6 +99,7 @@ import com.movtery.zalithlauncher.utils.logging.Logger.lWarning
  * @param enablePlatform 是否允许更改目标平台
  * @param searchPlatform 目标平台
  * @param searchName 搜索名称
+ * @param searchedMcMods 搜索得到的 MCMOD 项目
  * @param gameVersion 游戏版本
  * @param sortField 排序方式
  * @param allCategories 可用资源类别列表
@@ -94,6 +110,7 @@ import com.movtery.zalithlauncher.utils.logging.Logger.lWarning
  * @param onModLoaderChange 模组加载器变更时
  * @param extraFilter 额外的过滤器UI
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchFilter(
     modifier: Modifier = Modifier,
@@ -103,6 +120,8 @@ fun SearchFilter(
     onPlatformChange: (Platform) -> Unit = {},
     searchName: String,
     onSearchNameChange: (String) -> Unit = {},
+    onSearch: () -> Unit,
+    searchedMcMods: List<ModTranslations.McMod>,
     gameVersion: String?,
     onGameVersionChange: (String?) -> Unit = {},
     sortField: PlatformSortField,
@@ -127,16 +146,98 @@ fun SearchFilter(
                 onSingleLined = onSearchNameChange
             )
 
-            OwnOutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = searchName,
-                onValueChange = onSearchNameChange,
-                shape = MaterialTheme.shapes.large,
-                label = {
-                    Text(text = stringResource(R.string.download_assets_filter_search_name))
-                },
-                singleLine = true
-            )
+            val focusManager = LocalFocusManager.current
+            val interactionSource = remember { MutableInteractionSource() }
+            val isFocused = interactionSource.collectIsFocusedAsState().value
+            val showSuggestions = isFocused && searchedMcMods.isNotEmpty()
+            ExposedDropdownMenuBox(
+                expanded = showSuggestions,
+                onExpandedChange = {
+                    focusManager.clearFocus(false)
+                }
+            ) {
+                val fieldShape by animateShapeAsState(
+                    if (showSuggestions) RoundedCornerShape(
+                        topStart = 16.0.dp, topEnd = 16.0.dp,
+                        bottomStart = 0.dp, bottomEnd = 0.dp
+                    )
+                    else RoundedCornerShape(16.0.dp)
+                )
+                OwnOutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
+                    value = searchName,
+                    onValueChange = onSearchNameChange,
+                    shape = fieldShape,
+                    label = {
+                        Text(text = stringResource(R.string.download_assets_filter_search_name))
+                    },
+                    trailingIcon = {
+                        IconButton(
+                            onClick = onSearch
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = stringResource(R.string.generic_search)
+                            )
+                        }
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Search
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onSearch = {
+                            onSearch()
+                        }
+                    ),
+                    interactionSource = interactionSource
+                )
+
+                ExposedDropdownMenu(
+                    expanded = showSuggestions,
+                    onDismissRequest = {
+                        focusManager.clearFocus(false)
+                    },
+                    shape = RoundedCornerShape(
+                        topStart = 0.dp, topEnd = 0.dp,
+                        bottomStart = 16.0.dp, bottomEnd = 16.0.dp,
+                    )
+                ) {
+                    searchedMcMods.forEach { item ->
+                        DropdownMenuItem(
+                            text = {
+                                FlowRow(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        item.name,
+                                        style = MaterialTheme.typography.labelMedium
+                                    )
+                                    //英文名/次要名称
+                                    if (item.subname.isNotBlank()) {
+                                        Text(
+                                            modifier = Modifier.alpha(0.7f),
+                                            text = item.subname,
+                                            style = MaterialTheme.typography.labelSmall
+                                        )
+                                    }
+                                }
+                            },
+                            onClick = {
+                                onSearchNameChange(
+                                    item.subname.ifEmpty { item.abbr }
+                                )
+                                onSearch()
+                                focusManager.clearFocus(false)
+                            }
+                        )
+                    }
+                }
+            }
         }
 
         extraFilter?.invoke(this@LazyColumn)

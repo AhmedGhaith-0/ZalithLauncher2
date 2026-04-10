@@ -82,11 +82,21 @@ suspend fun validateSkinFile(skinFile: File): Boolean {
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true
         BitmapFactory.decodeFile(skinFile.absolutePath, options)
-
-        val width = options.outWidth
-        val height = options.outHeight
-
-        //像素尺寸是否满足 64x64 或 32x32
-        (width == 64 && height == 32) || (width == 64 && height == 64)
+        options.isDualLayerSkin() || options.isClassicSkin()
     }
+}
+
+/**
+ * 是否为双层皮肤：64x64
+ */
+fun BitmapFactory.Options.isDualLayerSkin(): Boolean {
+    return outWidth == 64 && outHeight == 64
+}
+
+/**
+ * 是否为经典皮肤（单层皮肤），早期皮肤类型，双手、双腿的贴图是分别共用的
+ * 64x32
+ */
+fun BitmapFactory.Options.isClassicSkin(): Boolean {
+    return outWidth == 64 && outHeight == 32
 }

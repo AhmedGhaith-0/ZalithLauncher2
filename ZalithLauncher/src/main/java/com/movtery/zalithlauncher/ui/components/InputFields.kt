@@ -18,9 +18,14 @@
 
 package com.movtery.zalithlauncher.ui.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,6 +41,8 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -85,14 +92,14 @@ fun SimpleTextInputField(
             textStyle = textStyle,
             cursorBrush = cursorBrush,
             singleLine = singleLine,
-            keyboardOptions = if (singleLine) KeyboardOptions.Default.copy(
+            keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done
-            ) else KeyboardOptions.Default,
-            keyboardActions = if (singleLine) KeyboardActions(
+            ),
+            keyboardActions = KeyboardActions(
                 onDone = {
                     focusManager.clearFocus(true)
                 }
-            ) else KeyboardActions.Default,
+            ),
             decorationBox = { innerTextField ->
                 Box(
                     contentAlignment = Alignment.CenterStart
@@ -105,6 +112,95 @@ fun SimpleTextInputField(
             }
         )
     }
+}
+
+@Composable
+fun SmallOutlinedEditField(
+    modifier: Modifier = Modifier,
+    value: String,
+    onValueChange: (String) -> Unit,
+    hint: (@Composable () -> Unit)? = null,
+    colors: TextFieldColors = OutlinedTextFieldDefaults.colors(),
+    contentColor: Color = MaterialTheme.colorScheme.onSurface,
+    shape: Shape = OutlinedTextFieldDefaults.shape,
+    textStyle: TextStyle = TextStyle(color = contentColor).copy(fontSize = 12.sp),
+    cursorBrush: Brush = SolidColor(LocalTextSelectionColors.current.handleColor),
+    keyboardOptions: KeyboardOptions? = null,
+    keyboardActions: KeyboardActions? = null,
+    singleLine: Boolean = false,
+    interactionSource: MutableInteractionSource? = null,
+) {
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+    val isFocused = interactionSource.collectIsFocusedAsState().value
+    val focusManager = LocalFocusManager.current
+
+    val borderWidth by animateDpAsState(
+        if (isFocused) 2.dp else 1.dp
+    )
+    val borderColor by animateColorAsState(
+        if (isFocused) colors.focusedIndicatorColor else colors.unfocusedIndicatorColor
+    )
+    BasicTextField(
+        modifier = modifier,
+        value = value,
+        onValueChange = { new ->
+            onValueChange(
+                if (singleLine) new.toSingleLine() else new
+            )
+        },
+        textStyle = textStyle,
+        cursorBrush = cursorBrush,
+        singleLine = singleLine,
+        keyboardOptions = keyboardOptions
+            ?: if (singleLine) KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
+            else KeyboardOptions.Default,
+        keyboardActions = KeyboardActions(
+            onDone = {
+                focusManager.clearFocus(true)
+                (keyboardActions ?: KeyboardActions.Default).onDone?.invoke(this@KeyboardActions)
+            },
+            onGo = {
+                focusManager.clearFocus(true)
+                (keyboardActions ?: KeyboardActions.Default).onGo?.invoke(this@KeyboardActions)
+            },
+            onNext = {
+                focusManager.clearFocus(true)
+                (keyboardActions ?: KeyboardActions.Default).onNext?.invoke(this@KeyboardActions)
+            },
+            onPrevious = {
+                focusManager.clearFocus(true)
+                (keyboardActions ?: KeyboardActions.Default).onPrevious?.invoke(this@KeyboardActions)
+            },
+            onSearch = {
+                focusManager.clearFocus(true)
+                (keyboardActions ?: KeyboardActions.Default).onSearch?.invoke(this@KeyboardActions)
+            },
+            onSend = {
+                focusManager.clearFocus(true)
+                (keyboardActions ?: KeyboardActions.Default).onSend?.invoke(this@KeyboardActions)
+            }
+        ),
+        decorationBox = { innerTextField ->
+            Box(
+                modifier = Modifier
+                    .border(width = borderWidth, color = borderColor, shape = shape),
+                contentAlignment = Alignment.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    if (value.isEmpty()) {
+                        hint?.invoke()
+                    }
+                    innerTextField()
+                }
+            }
+        },
+        interactionSource = interactionSource,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -125,8 +221,8 @@ fun OwnOutlinedTextField(
     supportingText: @Composable (() -> Unit)? = null,
     isError: Boolean = false,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    keyboardOptions: KeyboardOptions? = null,
+    keyboardActions: KeyboardActions? = null,
     singleLine: Boolean = false,
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
@@ -158,28 +254,33 @@ fun OwnOutlinedTextField(
         supportingText = supportingText,
         isError = isError,
         visualTransformation = visualTransformation,
-        keyboardOptions = if (singleLine) KeyboardOptions.Default.copy(
-            imeAction = ImeAction.Done
-        ) else keyboardOptions,
+        keyboardOptions = keyboardOptions
+            ?: if (singleLine) KeyboardOptions.Default.copy(imeAction = ImeAction.Done)
+            else KeyboardOptions.Default,
         keyboardActions = KeyboardActions(
             onDone = {
                 focusManager.clearFocus(true)
-                keyboardActions.onDone?.invoke(this@KeyboardActions)
+                (keyboardActions ?: KeyboardActions.Default).onDone?.invoke(this@KeyboardActions)
             },
             onGo = {
-                keyboardActions.onGo?.invoke(this@KeyboardActions)
+                focusManager.clearFocus(true)
+                (keyboardActions ?: KeyboardActions.Default).onGo?.invoke(this@KeyboardActions)
             },
             onNext = {
-                keyboardActions.onNext?.invoke(this@KeyboardActions)
+                focusManager.clearFocus(true)
+                (keyboardActions ?: KeyboardActions.Default).onNext?.invoke(this@KeyboardActions)
             },
             onPrevious = {
-                keyboardActions.onPrevious?.invoke(this@KeyboardActions)
+                focusManager.clearFocus(true)
+                (keyboardActions ?: KeyboardActions.Default).onPrevious?.invoke(this@KeyboardActions)
             },
             onSearch = {
-                keyboardActions.onSearch?.invoke(this@KeyboardActions)
+                focusManager.clearFocus(true)
+                (keyboardActions ?: KeyboardActions.Default).onSearch?.invoke(this@KeyboardActions)
             },
             onSend = {
-                keyboardActions.onSend?.invoke(this@KeyboardActions)
+                focusManager.clearFocus(true)
+                (keyboardActions ?: KeyboardActions.Default).onSend?.invoke(this@KeyboardActions)
             }
         ),
         singleLine = singleLine,

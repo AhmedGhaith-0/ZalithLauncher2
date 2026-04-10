@@ -19,6 +19,8 @@
 package com.movtery.zalithlauncher.ui.screens.content.versions
 
 import android.content.Context
+import android.os.Build
+import android.os.Vibrator
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -38,12 +40,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.core.content.getSystemService
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.control.ControlManager
 import com.movtery.zalithlauncher.game.multirt.RuntimesManager
 import com.movtery.zalithlauncher.game.plugin.driver.DriverPluginManager
 import com.movtery.zalithlauncher.game.renderer.Renderers
+import com.movtery.zalithlauncher.game.support.touch_controller.VibrationHandler
 import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.game.version.installed.VersionConfig
 import com.movtery.zalithlauncher.setting.AllSettings
@@ -61,6 +65,7 @@ import com.movtery.zalithlauncher.ui.screens.content.elements.MicrophoneCheckSta
 import com.movtery.zalithlauncher.ui.screens.content.settings.DriverSummaryLayout
 import com.movtery.zalithlauncher.ui.screens.content.settings.RendererSummaryLayout
 import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.CardPosition
+import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.EnumSettingsCard
 import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.IntSliderSettingsCard
 import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.ListSettingsCard
 import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.SettingsCard
@@ -417,24 +422,76 @@ private fun SupportConfigs(
             summary = stringResource(R.string.versions_config_enable_touch_proxy_summary)
         )
 
+        val vibrator = remember(context) { context.getSystemService<Vibrator>() }
+        var touchVibrateKind by remember { mutableStateOf(config.touchVibrateKind) }
+        val effectiveVibrateKind = touchVibrateKind ?: VibrationHandler.VibrateKind.default
         var touchVibrateDuration by remember { mutableIntStateOf(config.touchVibrateDuration) }
-        IntSliderSettingsCard(
+        EnumSettingsCard(
             modifier = Modifier.fillMaxWidth(),
             position = CardPosition.Middle,
-            value = touchVibrateDuration,
-            title = stringResource(R.string.versions_config_vibrate_duration_title),
-            summary = stringResource(R.string.versions_config_vibrate_duration_summary),
-            valueRange = 80f..500f,
-            onValueChange = {
-                touchVibrateDuration = it
-                config.touchVibrateDuration = touchVibrateDuration
+            value = effectiveVibrateKind,
+            title = stringResource(R.string.versions_config_vibrate_kind_title),
+            summary = stringResource(R.string.versions_config_vibrate_kind_summary),
+            entries = VibrationHandler.VibrateKind.entries,
+            getRadioEnable = { enum ->
+                if (enum == VibrationHandler.VibrateKind.ONE_SHOT) {
+                    true
+                } else {
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                }
             },
-            onValueChangeFinished = {
-                config.saveOrShowError(context, submitError)
+            getRadioText = { enum ->
+                when (enum) {
+                    VibrationHandler.VibrateKind.ONE_SHOT -> stringResource(R.string.vibrate_kind_one_shot)
+                    VibrationHandler.VibrateKind.CLICK -> stringResource(R.string.vibrate_kind_click)
+                    VibrationHandler.VibrateKind.DOUBLE_CLICK -> stringResource(R.string.vibrate_kind_double_click)
+                    VibrationHandler.VibrateKind.HEAVY_CLICK -> stringResource(R.string.vibrate_kind_heavy_click)
+                    VibrationHandler.VibrateKind.TICK -> stringResource(R.string.vibrate_kind_tick)
+                }
             },
-            suffix = "ms",
-            fineTuningControl = true
+            maxItemsInEachRow = 4,
+            onRadioClick = { enum ->
+                touchVibrateKind = enum
+                vibrator?.let { vibrator ->
+                    VibrationHandler.vibrate(
+                        vibrator = vibrator,
+                        vibrateDuration = touchVibrateDuration,
+                        vibrateKind = touchVibrateKind,
+                    )
+                }
+                if (config.touchVibrateKind != enum) {
+                    config.touchVibrateKind = enum
+                    config.saveOrShowError(context, submitError)
+                }
+            }
         )
+
+        AnimatedVisibility(effectiveVibrateKind == VibrationHandler.VibrateKind.ONE_SHOT) {
+            IntSliderSettingsCard(
+                modifier = Modifier.fillMaxWidth(),
+                position = CardPosition.Middle,
+                value = touchVibrateDuration,
+                title = stringResource(R.string.versions_config_vibrate_duration_title),
+                summary = stringResource(R.string.versions_config_vibrate_duration_summary),
+                valueRange = 80f..500f,
+                onValueChange = {
+                    touchVibrateDuration = it
+                    config.touchVibrateDuration = touchVibrateDuration
+                },
+                onValueChangeFinished = {
+                    vibrator?.let { vibrator ->
+                        VibrationHandler.vibrate(
+                            vibrator = vibrator,
+                            vibrateDuration = touchVibrateDuration,
+                            vibrateKind = touchVibrateKind,
+                        )
+                    }
+                    config.saveOrShowError(context, submitError)
+                },
+                suffix = "ms",
+                fineTuningControl = true
+            )
+        }
 
         //检查麦克风
         var microphoneState by remember { mutableStateOf<MicrophoneCheckState>(MicrophoneCheckState.None) }

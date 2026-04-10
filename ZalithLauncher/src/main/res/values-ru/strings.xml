@@ -170,10 +170,6 @@
     <string name="account_label_email">Электронная почта или имя пользователя</string>
     <string name="account_label_password">Пароль</string>
     <string name="account_change_skin">Сменить скин</string>
-    <string name="account_change_skin_select_model_title">Выбор модели скина</string>
-    <string name="account_change_skin_select_model_message">Это скин Стива (широкие руки) или Алекса (тонкие руки)?</string>
-    <string name="account_change_skin_model_steve">Модель Стива</string>
-    <string name="account_change_skin_model_alex">Модель Алекса</string>
     <string name="account_supporting_username_invalid_title">Недопустимое имя пользователя</string>
     <string name="account_supporting_username_invalid_local_message_hint1">Допустимые имена пользователей содержат только буквы (без учёта регистра), цифры и подчёркивания, с длиной от 3 до 16 символов.</string>
     <string name="account_supporting_username_invalid_local_message_hint2">В противном случае игра может работать некорректно.</string>
@@ -1071,9 +1067,6 @@
     <string name="crash_link_share_failed">Загрузка не удалась</string>
     <string name="crash_link_share_failed_link_not_found">Ссылка не найдена. Пожалуйста, попробуйте позже</string>
     <string name="download_game_addon_warning_api">не выбран. Без его установки большинство модов не будет работать!</string>
-    <string name="game_input_proxy_mode_default">В реальном времени</string>
-    <string name="game_input_proxy_mode_simple">Простой режим</string>
-    <string name="game_input_proxy_mode_send">Режим отправки</string>
     <string name="settings_launcher_language">Язык</string>
     <string name="settings_launcher_mirror_assets_search_title">Источник поиска платформы ресурсов</string>
     <string name="settings_launcher_mirror_assets_download_title">Источник загрузки платформы ресурсов</string>

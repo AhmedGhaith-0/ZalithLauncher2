@@ -59,3 +59,21 @@ fun nextPage(
         }
     }
 }
+
+fun navigatePage(
+    pageNumber: Int,
+    pages: List<AssetsPage?>,
+    limit: Int,
+    onSuccess: (AssetsPage) -> Unit = {},
+    onSearch: (index: Int) -> Unit = {}
+) {
+    val targetNumber = pageNumber - 1
+    //判断是否已缓存目标页
+    val targetPage = pages.getOrNull(targetNumber)
+    if (targetPage != null) {
+        onSuccess(targetPage)
+    } else {
+        //搜索目标页
+        onSearch(targetNumber * limit)
+    }
+}

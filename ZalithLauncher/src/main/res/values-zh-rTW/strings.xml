@@ -339,9 +339,6 @@
     <string name="game_button_log_output">日誌輸出</string>
     <string name="game_button_mouse_left">滑鼠左鍵</string>
     <string name="game_button_mouse_right">滑鼠右鍵</string>
-    <string name="game_input_proxy_mode_default">即時模式</string>
-    <string name="game_input_proxy_mode_simple">簡單模式</string>
-    <string name="game_input_proxy_mode_send">傳送模式</string>
     <string name="game_dialog_force_close_message">您確定要強制關閉並返回主介面嗎？</string>
     <string name="game_loading">遊戲正在執行，等待遊戲畫面出現中</string>
     <string name="game_loading_version_name">遊戲版本：%s</string>
@@ -403,10 +400,9 @@
     <string name="account_label_email">填寫電子郵件或使用者名稱</string>
     <string name="account_label_password">填寫密碼</string>
     <string name="account_change_skin">更換皮膚</string>
-    <string name="account_change_skin_select_model_title">選擇皮膚模型</string>
-    <string name="account_change_skin_select_model_message">此皮膚是 Steve 模型（粗手臂）還是 Alex 模型（細手臂）？</string>
-    <string name="account_change_skin_model_steve">Steve 模型</string>
-    <string name="account_change_skin_model_alex">Alex 模型</string>
+    <string name="account_change_skin_arm_style">手臂樣式</string>
+    <string name="account_change_skin_arm_wide">粗手臂</string>
+    <string name="account_change_skin_arm_slim">細手臂</string>
     <string name="account_change_skin_failed_to_import">無法快取目標檔案</string>
     <string name="account_change_skin_invalid">皮膚像素尺寸無效，應為 64x32 像素或 64x64 像素</string>
     <string name="account_change_skin_uploading">上傳皮膚檔案中</string>
@@ -608,6 +604,8 @@
     <string name="versions_config_auto_join_server_ip_summary">在此填入伺服器 IP，啟動遊戲後將自動加入目標伺服器。例如 114.514.114.514:114514</string>
     <string name="versions_config_enable_touch_proxy_title">啟用觸控代理</string>
     <string name="versions_config_enable_touch_proxy_summary">啟用為支援 Touch Controller 模組準備的觸控代理</string>
+    <string name="versions_config_vibrate_kind_title">振動類型</string>
+    <string name="versions_config_vibrate_kind_summary">設定 Touch Controller 模組振動時的振動類型</string>
     <string name="versions_config_vibrate_duration_title">振動時長</string>
     <string name="versions_config_vibrate_duration_summary">設定 Touch Controller 模組要求的裝置振動時長</string>
     <string name="versions_config_follow_global_if_blank">留白則跟隨全域設定</string>
@@ -1192,6 +1190,12 @@
     <string name="control_editor_special_joystick_style_joystick_size">搖桿大小</string>
     <string name="control_editor_exit_message">您確定要直接退出嗎？這將導致您的任何變更都無法被儲存。若需要儲存，請檢查編輯器選單。</string>
     <string name="control_editor_exit_confirm">直接退出</string>
+
+    <string name="vibrate_kind_one_shot">持續</string>
+    <string name="vibrate_kind_click">單擊</string>
+    <string name="vibrate_kind_double_click">雙擊</string>
+    <string name="vibrate_kind_heavy_click">重擊</string>
+    <string name="vibrate_kind_tick">滴答</string>
 
     <string name="festivals_new_year">新年快樂！</string>
     <string name="festivals_april_fools">愚人節快樂！</string>

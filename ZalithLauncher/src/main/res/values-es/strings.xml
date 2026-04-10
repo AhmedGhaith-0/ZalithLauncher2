@@ -422,10 +422,6 @@
     <string name="account_label_email">Correo electrónico o nombre de usuario</string>
     <string name="account_label_password">Contraseña</string>
     <string name="account_change_skin">Cambiar skin</string>
-    <string name="account_change_skin_select_model_title">Seleccionar modelo de skin</string>
-    <string name="account_change_skin_select_model_message">¿Esta skin es Steve (brazos anchos) o Alex (brazos delgados)?</string>
-    <string name="account_change_skin_model_steve">Modelo Steve</string>
-    <string name="account_change_skin_model_alex">Modelo Alex</string>
     <string name="account_change_skin_failed_to_import">Error al almacenar en caché el archivo de destino</string>
     <string name="account_change_skin_invalid">Tamaño de píxel de la skin inválido, debe ser 64x32 píxeles o 64x64 píxeles</string>
     <string name="account_change_skin_uploading">Subiendo archivo de skin</string>

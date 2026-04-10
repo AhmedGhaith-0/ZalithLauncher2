@@ -144,6 +144,7 @@ import com.movtery.zalithlauncher.ui.components.MarqueeText
 import com.movtery.zalithlauncher.ui.components.ModelAnimation
 import com.movtery.zalithlauncher.ui.components.OwnOutlinedTextField
 import com.movtery.zalithlauncher.ui.components.PlayerSkin
+import com.movtery.zalithlauncher.ui.components.RadioCard
 import com.movtery.zalithlauncher.ui.components.SimpleAlertDialog
 import com.movtery.zalithlauncher.ui.components.SimpleListDialog
 import com.movtery.zalithlauncher.ui.components.SimpleListItem
@@ -1111,82 +1112,6 @@ fun OtherServerLoginDialog(
     }
 }
 
-@Composable
-fun SelectSkinModelDialog(
-    onDismissRequest: () -> Unit = {},
-    onSelected: (SkinModelType) -> Unit = {}
-) {
-    Dialog(onDismissRequest = onDismissRequest) {
-        BoxWithConstraints(
-            modifier = Modifier.fillMaxHeight(),
-            contentAlignment = Alignment.Center
-        ) {
-            Surface(
-                modifier = Modifier
-                    .padding(all = 6.dp)
-                    .heightIn(max = maxHeight - 12.dp)
-                    .wrapContentHeight(),
-                shape = MaterialTheme.shapes.extraLarge,
-                shadowElevation = 6.dp
-            ) {
-                Column(
-                    modifier = Modifier.padding(all = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.account_change_skin_select_model_title),
-                        style = MaterialTheme.typography.titleMedium
-                    )
-
-                    val scrollState = rememberScrollState()
-                    Column(
-                        modifier = Modifier
-                            .fadeEdge(state = scrollState)
-                            .weight(1f, fill = false)
-                            .verticalScroll(state = scrollState),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = stringResource(R.string.account_change_skin_select_model_message),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Button(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = {
-                                onSelected(SkinModelType.STEVE)
-                            }
-                        ) {
-                            MarqueeText(text = stringResource(R.string.account_change_skin_model_steve))
-                        }
-                        Button(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = {
-                                onSelected(SkinModelType.ALEX)
-                            }
-                        ) {
-                            MarqueeText(text = stringResource(R.string.account_change_skin_model_alex))
-                        }
-                        FilledTonalButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = onDismissRequest
-                        ) {
-                            MarqueeText(text = stringResource(R.string.generic_cancel))
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 /**
  * 更改皮肤流程需要让 uri 与皮肤模型深度绑定
  * 重置或者确认更改时，能更方便的处理数据
@@ -1221,7 +1146,6 @@ fun ChangeSkinDialog(
     var pendingSkinData by remember { mutableStateOf<ChangeSkin?>(null) }
     var pendingCape by remember { mutableStateOf<PlayerProfile.Cape?>(null) }
 
-    var showModelSelector by remember { mutableStateOf(false) }
     var showCapeSelector by remember { mutableStateOf(false) }
 
     var isFetchingCapes by remember { mutableStateOf(false) }
@@ -1247,7 +1171,6 @@ fun ChangeSkinDialog(
         rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
             uri?.let {
                 pendingSkinData = ChangeSkin.ChangeSkinData(skinUri = it)
-                showModelSelector = true
             }
         }
 
@@ -1358,21 +1281,60 @@ fun ChangeSkinDialog(
                                 .verticalScroll(rememberScrollState()),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
+                            val skinData = pendingSkinData
+
                             //更换皮肤：选择皮肤图片文件
-                            InfoLayoutTextItem(
-                                modifier = Modifier.fillMaxWidth(),
-                                title = stringResource(R.string.account_change_skin),
-                                icon = {
-                                    Icon(
-                                        modifier = Modifier.size(22.dp),
-                                        imageVector = Icons.Outlined.FileUpload,
-                                        contentDescription = null
+                            when (skinData) {
+                                null, ChangeSkin.ResetSkin -> {
+                                    InfoLayoutTextItem(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        title = stringResource(R.string.account_change_skin),
+                                        icon = {
+                                            Icon(
+                                                modifier = Modifier.size(22.dp),
+                                                imageVector = Icons.Outlined.FileUpload,
+                                                contentDescription = null
+                                            )
+                                        },
+                                        onClick = {
+                                            skinPicker.launch(arrayOf("image/png"))
+                                        }
                                     )
-                                },
-                                onClick = {
-                                    skinPicker.launch(arrayOf("image/png"))
                                 }
-                            )
+                                is ChangeSkin.ChangeSkinData -> {
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.account_change_skin_arm_style),
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                        //选择样式
+                                        Column(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                                        ) {
+                                            //粗臂
+                                            RadioCard(
+                                                selected = skinData.skinModel == SkinModelType.STEVE,
+                                                text = stringResource(R.string.account_change_skin_arm_wide),
+                                                onClick = {
+                                                    pendingSkinData = skinData.copy(skinModel = SkinModelType.STEVE)
+                                                }
+                                            )
+                                            //细臂
+                                            RadioCard(
+                                                selected = skinData.skinModel == SkinModelType.ALEX,
+                                                text = stringResource(R.string.account_change_skin_arm_slim),
+                                                onClick = {
+                                                    pendingSkinData = skinData.copy(skinModel = SkinModelType.ALEX)
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
 
                             //仅微软账号支持更改披风
                             if (account.isMicrosoftAccount()) {
@@ -1476,24 +1438,6 @@ fun ChangeSkinDialog(
                 }
             }
         }
-    }
-
-    if (showModelSelector) {
-        SelectSkinModelDialog(
-            onDismissRequest = {
-                showModelSelector = false
-                //关闭时，一并重置已选择的皮肤
-                pendingSkinData = null
-                loadSkin()
-            },
-            onSelected = { model ->
-                val data = pendingSkinData as? ChangeSkin.ChangeSkinData
-                pendingSkinData = data?.copy(
-                    skinModel = model
-                )
-                showModelSelector = false
-            }
-        )
     }
 
     if (showCapeSelector) {

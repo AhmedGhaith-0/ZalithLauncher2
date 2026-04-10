@@ -327,10 +327,6 @@
     <string name="account_label_email">Email atau Nama Pengguna</string>
     <string name="account_label_password">Kata Sandi</string>
     <string name="account_change_skin">Ganti Skin</string>
-    <string name="account_change_skin_select_model_title">Pilih Model Skin</string>
-    <string name="account_change_skin_select_model_message">Apakah Ini Skin Steve (lengan besar) atau Alex (lengan kecil)?</string>
-    <string name="account_change_skin_model_steve">Model Steve</string>
-    <string name="account_change_skin_model_alex">Model Alex</string>
     <string name="account_supporting_username_invalid_title">Nama Pengguna Tidak Valid</string>
     <string name="account_supporting_username_invalid_local_message_hint1">Nama pengguna yang valid hanya mendukung huruf (besar/kecil), angka, dan garis bawah, dengan panjang antara 3 dan 16 karakter.</string>
     <string name="account_supporting_username_invalid_local_message_hint2">Jika tidak, gamenya mungkin tidak berjalan dengan benar.</string>
@@ -1053,9 +1049,6 @@
     <string name="crash_link_share_uploading">Mengunggah log ke %s</string>
     <string name="crash_link_share_failed">Gagal Mengunggah</string>
     <string name="crash_link_share_failed_link_not_found">Tidak ada tautan yang tersedia. Silakan coba lagi nanti.</string>
-    <string name="game_input_proxy_mode_default">Mode Waktu Nyata</string>
-    <string name="game_input_proxy_mode_simple">Mode Sederhana</string>
-    <string name="game_input_proxy_mode_send">Mode Kirim</string>
     <string name="settings_launcher_language">Bahasa</string>
     <string name="download_game_addon_warning_api">%s belum dipilih. Tanpa memasangnya, Sebagian besar mod tidak akan berfungsi!</string>
     <string name="account_advanced">Pengaturan Lanjutan</string>

@@ -168,6 +168,11 @@ android {
         buildConfig = true
         prefab = true
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 kotlin {

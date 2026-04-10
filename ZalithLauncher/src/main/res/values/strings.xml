@@ -377,9 +377,6 @@
     <string name="game_button_log_output">Log Output</string>
     <string name="game_button_mouse_left">Left Click</string>
     <string name="game_button_mouse_right">Right Click</string>
-    <string name="game_input_proxy_mode_default">Real-time Mode</string>
-    <string name="game_input_proxy_mode_simple">Simple Mode</string>
-    <string name="game_input_proxy_mode_send">Send Mode</string>
     <string name="game_dialog_force_close_message">Are you sure you want to force close and return to the main screen?</string>
     <string name="game_loading">The game is running, waiting for the game screen to appear</string>
     <string name="game_loading_version_name">Game Version: %s</string>
@@ -452,10 +449,9 @@
     <string name="account_label_email">Email or Username</string>
     <string name="account_label_password">Password</string>
     <string name="account_change_skin">Change Skin</string>
-    <string name="account_change_skin_select_model_title">Select Skin Model</string>
-    <string name="account_change_skin_select_model_message">Is this skin Steve (wide arms) or Alex (slim arms)?</string>
-    <string name="account_change_skin_model_steve">Steve Model</string>
-    <string name="account_change_skin_model_alex">Alex Model</string>
+    <string name="account_change_skin_arm_style">Arm Style</string>
+    <string name="account_change_skin_arm_wide">Wide Arms</string>
+    <string name="account_change_skin_arm_slim">Slim Arms</string>
     <string name="account_change_skin_failed_to_import">Failed to cache the target file</string>
     <string name="account_change_skin_invalid">Invalid skin pixel size, should be 64x32 pixels or 64x64 pixels</string>
     <string name="account_change_skin_uploading">Uploading skin file</string>
@@ -658,6 +654,8 @@
     <string name="versions_config_auto_join_server_ip_summary">Enter the server IP here to auto-join after launching the game (e.g., 114.514.114.514:114514)</string>
     <string name="versions_config_enable_touch_proxy_title">Enable Control Proxy</string>
     <string name="versions_config_enable_touch_proxy_summary">Enable the control proxy prepared for the Touch Controller mod</string>
+    <string name="versions_config_vibrate_kind_title">Vibration Kind</string>
+    <string name="versions_config_vibrate_kind_summary">Set the vibrate kind when TouchController triggers vibration</string>
     <string name="versions_config_vibrate_duration_title">Vibration Duration</string>
     <string name="versions_config_vibrate_duration_summary">Set the vibration duration required by the Touch Controller mod</string>
     <string name="versions_config_follow_global_if_blank">Leave blank to use global settings</string>
@@ -1213,6 +1211,12 @@
     <string name="language_brazilian_portuguese" translatable="false">Português brasileiro</string>
     <string name="language_uyghur" translatable="false">ۋىغرۇچە</string>
     <string name="language_filipino" translatable="false">Filipino</string>
+    <!-- Vibration Kind -->
+    <string name="vibrate_kind_one_shot">Constant</string>
+    <string name="vibrate_kind_click">Click</string>
+    <string name="vibrate_kind_double_click">Double click</string>
+    <string name="vibrate_kind_heavy_click">Heavy click</string>
+    <string name="vibrate_kind_tick">Tick</string>
 
     <string name="festivals_new_year">Happy New Year!</string>
     <string name="festivals_april_fools">Happy April Fools\' Day!</string>

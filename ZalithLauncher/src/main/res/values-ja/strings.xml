@@ -386,8 +386,6 @@
     <string name="account_supporting_username_invalid_still_use">常に使用</string>
     <string name="account_supporting_username_invalid_short">ユーザー名が短すぎる</string>
     <string name="account_supporting_username_invalid_long">ユーザー名が長すぎる</string>
-    <string name="account_change_skin_model_steve">スティーブモデル</string>
-    <string name="account_change_skin_model_alex">アレックスモデル</string>
     <string name="account_label_email">メールアドレスまたはユーザー名</string>
     <string name="account_add_new_server">認証サーバーを追加</string>
     <string name="account_add_new_server_button">認証を追加</string>
@@ -442,8 +440,6 @@
     <string name="account_supporting_username_invalid_local_message_hint3">有効なユーザー名: Name、Name_、Name123</string>
     <string name="account_supporting_username_invalid_local_message_hint4">無効なユーザー名: Name@、N ame、name_name_name_name</string>
     <string name="account_change_skin">スキンを変更</string>
-    <string name="account_change_skin_select_model_title">スキンモデルを選択</string>
-    <string name="account_change_skin_select_model_message">このスキンはスティーブ（広い腕）またはアレックス（細い腕）ですか？</string>
     <string name="account_label_password">パスワード</string>
     <string name="settings_launcher_mirror_file_download_title">ファイルのダウンロードソース</string>
     <string name="settings_launcher_mirror_official_first">公式のソースを優先</string>
@@ -1047,9 +1043,6 @@
     <string name="settings_launcher_mirror_assets_search_title">アセットプラットフォームの検索ソース</string>
     <string name="settings_launcher_mirror_assets_download_title">アセットプラットフォームのダウンロードソース</string>
     <string name="about_acknowledgements_mcim_text">%s はMCIMミラーソースを使っています</string>
-    <string name="game_input_proxy_mode_default">リアルタイムモード</string>
-    <string name="game_input_proxy_mode_simple">シンプルモード</string>
-    <string name="game_input_proxy_mode_send">送信モード</string>
     <string name="settings_launcher_language">言語</string>
     <string name="generic_copied">コピー済み</string>
     <string name="crash_link_share_button">リンクを共有</string>
