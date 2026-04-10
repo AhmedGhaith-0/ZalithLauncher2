@@ -15,6 +15,7 @@ configurations {
 }
 
 dependencies {
+    compileOnly(fileTree(mapOf("dir" to "../compileOnly", "include" to listOf("*.jar"))))
     implementation(fileTree(mapOf("dir" to "libs/$lwjglVersion", "include" to listOf("*.jar"))))
     add("lwjglModules", fileTree(mapOf("dir" to "libs/$lwjglVersion", "include" to listOf("*.jar"))))
     implementation("org.jspecify:jspecify:1.0.0") // lwjgl3.3.3 has jsr305 included as a jar
