@@ -273,6 +273,12 @@ abstract class Launcher(
         // that we ship with Java (since it may be older than what's needed)
         args.add("-Dorg.lwjgl.freetype.libname=${PathManager.DIR_NATIVE_LIB}/libfreetype.so")
 
+        // Our spirv-cross is compiled shared, so it gets named shared.
+        args.add("-Dorg.lwjgl.spvc.libname=spirv-cross-c-shared")
+
+        // We don't have jemalloc for our LWJGL so set the allocator to system to avoid error logs
+        args.add("-Dorg.lwjgl.system.allocator=system")
+
         // Some phones are not using the right number of cores, fix that
         args.add("-XX:ActiveProcessorCount=${java.lang.Runtime.getRuntime().availableProcessors()}")
     }
