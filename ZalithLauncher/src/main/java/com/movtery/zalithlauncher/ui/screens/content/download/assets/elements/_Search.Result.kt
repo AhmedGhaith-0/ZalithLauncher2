@@ -21,6 +21,10 @@ package com.movtery.zalithlauncher.ui.screens.content.download.assets.elements
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -234,6 +238,67 @@ private fun PageController(
         mutableStateOf(false)
     }
 
+    @Composable
+    fun PageNumber(modifier: Modifier = Modifier) {
+        Box(
+            modifier = modifier,
+            contentAlignment = Alignment.CenterStart
+        ) {
+            AnimatedVisibility(
+                visible = editPageNumber,
+                enter = expandHorizontally() + fadeIn(),
+                exit = shrinkHorizontally() + fadeOut(),
+            ) {
+                var number by remember { mutableIntStateOf(page.pageNumber) }
+                var numberText by remember { mutableStateOf("${page.pageNumber}") }
+                //编辑页码
+                SmallOutlinedEditField(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(vertical = 2.dp)
+                        .padding(start = 2.dp, end = 8.dp)
+                        .width(72.dp),
+                    value = numberText,
+                    onValueChange = onValueChange@ { value ->
+                        val number0 = if (value.isEmptyOrBlank()) {
+                            1 //为了编辑体验，留空时视为1
+                        } else {
+                            value.toIntOrNull() ?: return@onValueChange
+                        }
+                        number = number0.coerceIn(1, page.totalPage)
+                        numberText = if (value.isEmptyOrBlank()) value else number.toString()
+                    },
+                    shape = MaterialTheme.shapes.medium,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            if (number != page.pageNumber) {
+                                onNavigatePage(number)
+                            }
+                            editPageNumber = false
+                        }
+                    ),
+                    singleLine = true
+                )
+            }
+
+            //页码
+            AnimatedVisibility(
+                visible = !editPageNumber,
+                enter = expandHorizontally() + fadeIn(),
+                exit = shrinkHorizontally() + fadeOut(),
+            ) {
+                Text(
+                    modifier = Modifier.padding(start = 16.dp),
+                    text = "${page.pageNumber} ",
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
+        }
+    }
+
     Surface(
         modifier = modifier,
         shape = shape,
@@ -251,54 +316,9 @@ private fun PageController(
                     },
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AnimatedVisibility(
-                    visible = editPageNumber
-                ) {
-                    var number by remember { mutableIntStateOf(page.pageNumber) }
-                    var numberText by remember { mutableStateOf("${page.pageNumber}") }
-                    //编辑页码
-                    SmallOutlinedEditField(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .padding(vertical = 2.dp)
-                            .padding(start = 2.dp, end = 12.dp)
-                            .width(72.dp),
-                        value = numberText,
-                        onValueChange = onValueChange@ { value ->
-                            val number0 = if (value.isEmptyOrBlank()) {
-                                1 //为了编辑体验，留空时视为1
-                            } else {
-                                value.toIntOrNull() ?: return@onValueChange
-                            }
-                            number = number0.coerceIn(1, page.totalPage)
-                            numberText = if (value.isEmptyOrBlank()) value else number.toString()
-                        },
-                        shape = MaterialTheme.shapes.medium,
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Done
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                if (number != page.pageNumber) {
-                                    onNavigatePage(number)
-                                }
-                                editPageNumber = false
-                            }
-                        ),
-                        singleLine = true
-                    )
-                }
-
-                //页码
-                AnimatedVisibility(
-                    visible = !editPageNumber
-                ) {
-                    Text(
-                        modifier = Modifier.padding(start = 16.dp),
-                        text = "${page.pageNumber} ",
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                }
+                PageNumber(
+                    modifier = Modifier.fillMaxHeight()
+                )
 
                 Text(
                     modifier = Modifier.padding(end = 16.dp),
