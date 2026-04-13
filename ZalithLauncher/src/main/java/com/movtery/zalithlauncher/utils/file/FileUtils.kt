@@ -25,7 +25,7 @@ import android.content.Intent
 import androidx.core.content.FileProvider
 import com.movtery.zalithlauncher.utils.logging.Logger.lError
 import com.movtery.zalithlauncher.utils.logging.Logger.lInfo
-import com.movtery.zalithlauncher.utils.string.compareChar
+import com.movtery.zalithlauncher.utils.string.naturalCompare
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
@@ -106,7 +106,7 @@ fun sortWithFileName(o1: File, o2: File): Int {
     if (isDir1 && !isDir2) return -1
     if (!isDir1 && isDir2) return 1
 
-    return compareChar(o1.name, o2.name)
+    return naturalCompare(o1.name, o2.name)
 }
 
 const val INVALID_CHARACTERS_REGEX = "[\\\\/:*?\"<>|\\t\\n]"

@@ -18,8 +18,7 @@
 
 package com.movtery.zalithlauncher.game.version.installed
 
-import com.movtery.zalithlauncher.utils.string.compareChar
-import com.movtery.zalithlauncher.utils.string.compareVersion
+import com.movtery.zalithlauncher.utils.string.naturalCompare
 import org.jackhuang.hmcl.util.versioning.GameVersionNumber
 
 object VersionComparator: Comparator<Version> {
@@ -34,22 +33,21 @@ object VersionComparator: Comparator<Version> {
         val ver1 = o1.getVersionInfo()?.minecraftVersion
         val ver2 = o2.getVersionInfo()?.minecraftVersion
 
-        var sort = if (ver1 != null && ver2 != null) {
-            -GameVersionNumber.compare(ver1, ver2)
-        } else {
-            null
+        if (ver1 != null && ver2 != null) {
+            val versionCompare = GameVersionNumber.compare(ver1, ver2)
+            if (versionCompare != 0) {
+                return -versionCompare
+            }
         }
 
-        if (sort == null) {
-            val thisVer = ver1 ?: o1.getVersionName()
-            val otherVer = ver2 ?: o2.getVersionName()
-            sort = -thisVer.compareVersion(otherVer)
+        val name1 = ver1 ?: o1.getVersionName()
+        val name2 = ver2 ?: o2.getVersionName()
+
+        val nameCompare = naturalCompare(name1, name2)
+        if (nameCompare != 0) {
+            return nameCompare
         }
 
-        if (sort == 0) {
-            sort = compareChar(o1.getVersionName(), o2.getVersionName())
-        }
-
-        return sort
+        return naturalCompare(o1.getVersionName(), o2.getVersionName())
     }
 }
