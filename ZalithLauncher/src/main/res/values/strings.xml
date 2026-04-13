@@ -1209,9 +1209,10 @@
     <string name="language_portuguese" translatable="false">Português</string>
     <string name="language_arabic" translatable="false">اَلْعَرَبِيَّةُ</string>
     <string name="language_italian" translatable="false">Italiano</string>
-    <string name="language_brazilian_portuguese" translatable="false">Português brasileiro</string>
+    <string name="language_brazilian_portuguese" translatable="false">Português (Brasil)</string>
     <string name="language_uyghur" translatable="false">ۋىغرۇچە</string>
     <string name="language_filipino" translatable="false">Filipino</string>
+    <string name="language_thai" translatable="false">ไทย</string>
     <!-- Vibration Kind -->
     <string name="vibrate_kind_one_shot">Constant</string>
     <string name="vibrate_kind_click">Click</string>
