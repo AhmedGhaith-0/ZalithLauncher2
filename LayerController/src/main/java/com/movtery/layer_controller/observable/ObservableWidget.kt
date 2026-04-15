@@ -69,6 +69,11 @@ abstract class ObservableWidget {
     internal abstract val widgetSize: ButtonSize
 
     /**
+     * 存入组件的大小属性
+     */
+    internal abstract fun putWidgetSize(size: ButtonSize)
+
+    /**
      * 确认该组件是否可以响应触摸事件
      */
     open fun canTouch(): Boolean = true

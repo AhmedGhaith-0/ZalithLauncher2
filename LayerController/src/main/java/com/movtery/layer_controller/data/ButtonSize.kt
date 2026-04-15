@@ -32,6 +32,16 @@ import kotlinx.serialization.Serializable
 const val MIN_SIZE_DP = 5.0f
 
 /**
+ * 按钮百分比大小最小值
+ */
+internal const val MIN_SIZE_PERCENTAGE = 100
+
+/**
+ * 按钮百分比大小最大值
+ */
+internal const val MAX_SIZE_PERCENTAGE = 10000
+
+/**
  * 按钮大小百分比取值范围
  */
 val SIZE_PERCENTAGE: ClosedFloatingPointRange<Float> = 100.0f..10000.0f

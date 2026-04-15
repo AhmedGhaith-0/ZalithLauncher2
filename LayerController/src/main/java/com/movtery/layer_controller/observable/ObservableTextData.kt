@@ -51,6 +51,10 @@ open class ObservableTextData(data: TextData) : ObservableWidget() {
         this.position = position
     }
 
+    override fun putWidgetSize(size: ButtonSize) {
+        this.buttonSize = size
+    }
+
     override val styleId: String?
         get() = buttonStyle
 
