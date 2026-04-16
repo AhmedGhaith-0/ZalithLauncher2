@@ -80,9 +80,9 @@ public class CallbackBridge {
 
     public static void sendKeycode(int keycode, char keychar, int scancode, int modifiers, boolean isDown) {
         // TODO CHECK: This may cause input issue, not receive input!
-        if(keycode != 0)  nativeSendKey(keycode,scancode,isDown ? 1 : 0, modifiers);
-        if(isDown && keychar != '\u0000') {
-            nativeSendCharMods(keychar,modifiers);
+        if (keycode != 0) nativeSendKey(keycode, scancode, isDown ? 1 : 0, modifiers);
+        if (isDown && !Character.isISOControl(keychar)) {
+            nativeSendCharMods(keychar, modifiers);
             nativeSendChar(keychar);
         }
     }
