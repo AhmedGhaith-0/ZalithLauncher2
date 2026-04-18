@@ -379,19 +379,7 @@ fun Activity.openLink(link: String, dataType: String?) {
         .setTitle(R.string.generic_open_link)
         .setMessage(link)
         .setPositiveButton(R.string.generic_confirm) { _, _ ->
-            try {
-                val uri = link.toUri()
-                val browserIntent = if (dataType != null) {
-                    Intent(Intent.ACTION_VIEW).apply {
-                        setDataAndType(uri, dataType)
-                    }
-                } else {
-                    Intent(Intent.ACTION_VIEW, uri)
-                }
-                startActivity(browserIntent)
-            } catch (e: Exception) {
-                lWarning("Failed to open link: $link", e)
-            }
+            openLinkInternal(link, dataType)
         }
         .setNegativeButton(R.string.generic_cancel) { dialog, _ ->
             dialog.dismiss()
@@ -401,6 +389,25 @@ fun Activity.openLink(link: String, dataType: String?) {
             dialog.dismiss()
         }
         .show()
+}
+
+/**
+ * 直接在浏览器打开指定链接
+ */
+fun Activity.openLinkInternal(link: String, dataType: String? = null) {
+    try {
+        val uri = link.toUri()
+        val browserIntent = if (dataType != null) {
+            Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, dataType)
+            }
+        } else {
+            Intent(Intent.ACTION_VIEW, uri)
+        }
+        startActivity(browserIntent)
+    } catch (e: Exception) {
+        lWarning("Failed to open link: $link", e)
+    }
 }
 
 /**

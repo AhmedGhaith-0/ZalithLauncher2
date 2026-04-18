@@ -26,6 +26,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,6 +45,8 @@ import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.game.multirt.RuntimesManager
 import com.movtery.zalithlauncher.game.plugin.natives.NativePlugin
 import com.movtery.zalithlauncher.game.plugin.natives.NativePluginManager
+import com.movtery.zalithlauncher.path.URL_CLOUD_NATIVE_LIB_PLUGINS
+import com.movtery.zalithlauncher.path.URL_GITHUB_NATIVE_LIB_PLUGINS
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.setting.unit.floatRange
 import com.movtery.zalithlauncher.setting.unit.min
@@ -53,17 +59,21 @@ import com.movtery.zalithlauncher.ui.screens.content.elements.MemoryPreview
 import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.CardPosition
 import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.IntSliderSettingsCard
 import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.ListSettingsCard
+import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.SettingsCard
 import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.SettingsCardColumn
 import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.StringListSettingsCard
 import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.SwitchSettingsCard
 import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.TextInputSettingsCard
 import com.movtery.zalithlauncher.utils.platform.getMaxMemoryForSettings
+import com.movtery.zalithlauncher.viewmodel.EventViewModel
+import com.movtery.zalithlauncher.viewmodel.sendDLPlugin
 
 @Composable
 fun GameSettingsScreen(
     key: NestedNavKey.Settings,
     settingsScreenKey: TitledNavKey?,
-    mainScreenKey: TitledNavKey?
+    mainScreenKey: TitledNavKey?,
+    eventViewModel: EventViewModel
 ) {
     BaseScreen(
         Triple(key, mainScreenKey, false),
@@ -141,6 +151,27 @@ fun GameSettingsScreen(
                         NativePluginManager.getPlugins()
                     }
 
+                    @Composable
+                    fun DLNativeLibsButton() {
+                        IconButton(
+                            onClick = {
+                                eventViewModel.sendDLPlugin(
+                                    githubLink = URL_GITHUB_NATIVE_LIB_PLUGINS,
+                                    cloudDrives = listOf(
+                                        EventViewModel.Event.DownloadPlugins.CloudDrive(
+                                            language = "zh",
+                                            link = URL_CLOUD_NATIVE_LIB_PLUGINS
+                                        )
+                                    )
+                                )
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Download,
+                                contentDescription = stringResource(R.string.generic_download)
+                            )
+                        }
+                    }
                     if (nativePlugins.isNotEmpty()) {
                         StringListSettingsCard(
                             modifier = Modifier.fillMaxWidth(),
@@ -161,7 +192,21 @@ fun GameSettingsScreen(
                             getItemSummary = { plugin ->
                                 NativePluginSummaryLayout(plugin)
                             },
-                            getItemCheck = { contains -> !contains }
+                            getItemCheck = { contains -> !contains },
+                            trailingIcon = {
+                                DLNativeLibsButton()
+                            },
+                        )
+                    } else {
+                        SettingsCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            position = CardPosition.Middle,
+                            title = stringResource(R.string.settings_game_native_lib_plugin_title),
+                            summary = stringResource(R.string.settings_game_native_lib_plugin_summary),
+                            onClick = {},
+                            trailingIcon = {
+                                DLNativeLibsButton()
+                            }
                         )
                     }
 

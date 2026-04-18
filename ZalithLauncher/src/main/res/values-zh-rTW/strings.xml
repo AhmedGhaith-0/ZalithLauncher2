@@ -385,6 +385,8 @@
     <string name="renderer_version_storage_permissions_sdk30">目前的渲染器 %s 可透過設定檔修改設定，請先為啟動器開啟「管理所有檔案」的權限，否則將無法讀取並載入該渲染器的設定！</string>
     <!--  外掛  -->
     <string name="plugin_unsupported_warning">目前外掛 %s 不支援此遊戲版本，繼續使用可能導致遊戲崩潰！您確定要忽視風險並繼續嗎？</string>
+    <string name="plugin_download_title">下載外掛</string>
+    <string name="plugin_download_summary">下載外掛，以應用程式的方式進行安裝，重新打開啟動器即可自動載入！</string>
     <!--  帳號  -->
     <string name="account_no_account">找不到可用帳號</string>
     <string name="account_login">登入</string>

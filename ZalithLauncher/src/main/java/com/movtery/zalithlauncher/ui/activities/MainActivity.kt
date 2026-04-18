@@ -35,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.coroutine.Task
 import com.movtery.zalithlauncher.coroutine.TaskSystem
@@ -52,10 +53,12 @@ import com.movtery.zalithlauncher.ui.screens.main.MainScreen
 import com.movtery.zalithlauncher.ui.theme.ZalithLauncherTheme
 import com.movtery.zalithlauncher.ui.theme.feativals.FestivalEffects
 import com.movtery.zalithlauncher.upgrade.TooFrequentOperationException
+import com.movtery.zalithlauncher.utils.compareLangTag
 import com.movtery.zalithlauncher.utils.festival.getTodayFestivals
 import com.movtery.zalithlauncher.utils.isChinese
 import com.movtery.zalithlauncher.utils.logging.Logger.lInfo
 import com.movtery.zalithlauncher.utils.network.openLink
+import com.movtery.zalithlauncher.utils.network.openLinkInternal
 import com.movtery.zalithlauncher.utils.string.getMessageOrToString
 import com.movtery.zalithlauncher.viewmodel.BackgroundViewModel
 import com.movtery.zalithlauncher.viewmodel.ErrorViewModel
@@ -72,6 +75,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : BaseAppCompatActivity() {
@@ -198,6 +202,9 @@ class MainActivity : BaseAppCompatActivity() {
                     }
                     is EventViewModel.Event.ImportControls -> {
                         importControlFiles(event.uris)
+                    }
+                    is EventViewModel.Event.DownloadPlugins -> {
+                        showDownloadPlugins(event.link)
                     }
                     else -> {
                         //忽略
@@ -342,6 +349,38 @@ class MainActivity : BaseAppCompatActivity() {
                     clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                 }
             }
+        }
+    }
+
+    /**
+     * 弹出下载插件的链接提示对话框
+     */
+    private suspend fun showDownloadPlugins(link: EventViewModel.Event.DownloadPlugins.Links) {
+        //匹配当前系统语言可见的网盘链接
+        val locale = Locale.getDefault()
+        val cloudDrive = link.cloudDrives.sortedByDescending {
+            it.language.contains("_")
+        }.find { drive ->
+            locale.compareLangTag(drive.language)
+        }
+
+        withContext(Dispatchers.Main) {
+            val builder = MaterialAlertDialogBuilder(this@MainActivity)
+                .setTitle(R.string.plugin_download_title)
+                .setMessage(R.string.plugin_download_summary)
+                .setPositiveButton("Github") { dialog, _ ->
+                    openLinkInternal(link.github)
+                    dialog.dismiss()
+                }
+
+            cloudDrive?.link?.let { link ->
+                builder.setNegativeButton(R.string.upgrade_cloud_drive) { dialog, _ ->
+                    openLinkInternal(link)
+                    dialog.dismiss()
+                }
+            }
+
+            builder.create().show()
         }
     }
 

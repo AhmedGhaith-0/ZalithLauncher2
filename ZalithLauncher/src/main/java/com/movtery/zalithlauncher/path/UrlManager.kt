@@ -46,6 +46,14 @@ const val URL_WEBLATE: String = "https://hosted.weblate.org/projects/zalithlaunc
 const val URL_SUPPORT: String = "https://ifdian.net/a/MovTery"
 const val URL_EASYTIER: String = "https://easytier.cn/"
 
+const val URL_GITHUB_RENDERER_PLUGINS = "https://github.com/ShirosakiMio/FCLRendererPlugin/releases/tag/Renderer"
+const val URL_GITHUB_DRIVER_PLUGINS = "https://github.com/FCL-Team/FCLDriverPlugin/releases/tag/Turnip"
+const val URL_GITHUB_NATIVE_LIB_PLUGINS = "https://github.com/ZalithLauncher/NativeLibPlugin/releases"
+
+const val URL_CLOUD_RENDERER_PLUGINS = "https://www.123865.com/s/YLIUVv-hae0v"
+const val URL_CLOUD_DRIVE_DRIVER_PLUGINS = "https://www.123865.com/s/YLIUVv-3ae0v"
+const val URL_CLOUD_NATIVE_LIB_PLUGINS = "https://www.123865.com/s/YLIUVv-Hae0v"
+
 val GLOBAL_JSON = Json {
     ignoreUnknownKeys = true
     explicitNulls = true

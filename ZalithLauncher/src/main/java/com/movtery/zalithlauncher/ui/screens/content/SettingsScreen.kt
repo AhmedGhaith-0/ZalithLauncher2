@@ -213,10 +213,10 @@ private fun NavigationUI(
             popTransitionSpec = rememberTransitionSpec(),
             entryProvider = entryProvider {
                 entry<NormalNavKey.Settings.Renderer> {
-                    RendererSettingsScreen(key, settingsScreenKey, mainScreenKey)
+                    RendererSettingsScreen(key, settingsScreenKey, mainScreenKey, eventViewModel)
                 }
                 entry<NormalNavKey.Settings.Game> {
-                    GameSettingsScreen(key, settingsScreenKey, mainScreenKey)
+                    GameSettingsScreen(key, settingsScreenKey, mainScreenKey, eventViewModel)
                 }
                 entry<NormalNavKey.Settings.Control> {
                     ControlSettingsScreen(key, settingsScreenKey, mainScreenKey, eventViewModel, submitError)

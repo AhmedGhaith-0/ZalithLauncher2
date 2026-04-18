@@ -79,6 +79,22 @@ class EventViewModel : ViewModel() {
         data class KeepScreen(val on: Boolean) : Event
         /** 导入控制布局 */
         data class ImportControls(val uris: List<Uri>) : Event
+        /** 打开下载插件的链接窗口 */
+        data class DownloadPlugins(val link: Links): Event {
+            data class Links(
+                val github: String,
+                val cloudDrives: List<CloudDrive> = emptyList()
+            )
+            /**
+             * 网盘链接，按语言区分
+             * @param language 语言标识
+             * @param link 网盘链接
+             */
+            data class CloudDrive(
+                val language: String,
+                val link: String
+            )
+        }
     }
 }
 
@@ -86,4 +102,18 @@ fun EventViewModel.sendKeepScreen(
     on: Boolean
 ) {
     sendEvent(EventViewModel.Event.KeepScreen(on))
+}
+
+fun EventViewModel.sendDLPlugin(
+    githubLink: String,
+    cloudDrives: List<EventViewModel.Event.DownloadPlugins.CloudDrive> = emptyList()
+) {
+    sendEvent(
+        EventViewModel.Event.DownloadPlugins(
+            link = EventViewModel.Event.DownloadPlugins.Links(
+                github = githubLink,
+                cloudDrives = cloudDrives
+            )
+        )
+    )
 }

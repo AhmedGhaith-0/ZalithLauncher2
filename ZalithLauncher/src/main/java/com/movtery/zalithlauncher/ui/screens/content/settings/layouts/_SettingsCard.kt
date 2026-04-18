@@ -22,12 +22,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
@@ -248,6 +251,7 @@ fun SettingsCard(
     innerShape: Dp = 4.dp,
     innerPadding: PaddingValues = PaddingValues(all = 16.dp),
     onClick: () -> Unit,
+    trailingIcon: (@Composable RowScope.() -> Unit)? = null,
     enabled: Boolean = true
 ) {
     val shape = rememberSettingsCardShape(position, outerShape, innerShape)
@@ -258,15 +262,26 @@ fun SettingsCard(
         onClick = onClick,
         enabled = enabled
     ) {
-        TitleAndSummary(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(innerPadding),
-            title = title,
-            summary = summary,
-            titleStyle = titleStyle,
-            summaryStyle = summaryStyle
-        )
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            TitleAndSummary(
+                modifier = Modifier.weight(1f),
+                title = title,
+                summary = summary,
+                titleStyle = titleStyle,
+                summaryStyle = summaryStyle
+            )
+            trailingIcon?.let { trailing ->
+                Row(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    content = trailing
+                )
+            }
+        }
     }
 }
 

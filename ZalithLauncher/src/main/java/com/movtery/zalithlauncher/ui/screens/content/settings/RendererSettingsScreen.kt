@@ -27,6 +27,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,6 +51,10 @@ import com.movtery.zalithlauncher.game.plugin.driver.DriverPluginManager
 import com.movtery.zalithlauncher.game.renderer.RendererInterface
 import com.movtery.zalithlauncher.game.renderer.Renderers
 import com.movtery.zalithlauncher.game.version.installed.GraphicsApi
+import com.movtery.zalithlauncher.path.URL_CLOUD_DRIVE_DRIVER_PLUGINS
+import com.movtery.zalithlauncher.path.URL_CLOUD_RENDERER_PLUGINS
+import com.movtery.zalithlauncher.path.URL_GITHUB_DRIVER_PLUGINS
+import com.movtery.zalithlauncher.path.URL_GITHUB_RENDERER_PLUGINS
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.setting.unit.floatRange
 import com.movtery.zalithlauncher.ui.base.BaseScreen
@@ -62,12 +70,15 @@ import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.SettingsCa
 import com.movtery.zalithlauncher.ui.screens.content.settings.layouts.SwitchSettingsCard
 import com.movtery.zalithlauncher.utils.device.checkVulkanSupport
 import com.movtery.zalithlauncher.utils.isAdrenoGPU
+import com.movtery.zalithlauncher.viewmodel.EventViewModel
+import com.movtery.zalithlauncher.viewmodel.sendDLPlugin
 
 @Composable
 fun RendererSettingsScreen(
     key: NestedNavKey.Settings,
     settingsScreenKey: TitledNavKey?,
-    mainScreenKey: TitledNavKey?
+    mainScreenKey: TitledNavKey?,
+    eventViewModel: EventViewModel,
 ) {
     BaseScreen(
         Triple(key, mainScreenKey, false),
@@ -99,6 +110,26 @@ fun RendererSettingsScreen(
                         getItemId = { it.getUniqueIdentifier() },
                         getItemSummary = {
                             RendererSummaryLayout(it)
+                        },
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+                                    eventViewModel.sendDLPlugin(
+                                        githubLink = URL_GITHUB_RENDERER_PLUGINS,
+                                        cloudDrives = listOf(
+                                            EventViewModel.Event.DownloadPlugins.CloudDrive(
+                                                language = "zh",
+                                                link = URL_CLOUD_RENDERER_PLUGINS
+                                            )
+                                        )
+                                    )
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Download,
+                                    contentDescription = stringResource(R.string.generic_download)
+                                )
+                            }
                         }
                     )
 
@@ -112,6 +143,26 @@ fun RendererSettingsScreen(
                         getItemId = { it.id },
                         getItemSummary = {
                             DriverSummaryLayout(it)
+                        },
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+                                    eventViewModel.sendDLPlugin(
+                                        githubLink = URL_GITHUB_DRIVER_PLUGINS,
+                                        cloudDrives = listOf(
+                                            EventViewModel.Event.DownloadPlugins.CloudDrive(
+                                                language = "zh",
+                                                link = URL_CLOUD_DRIVE_DRIVER_PLUGINS
+                                            )
+                                        )
+                                    )
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Download,
+                                    contentDescription = stringResource(R.string.generic_download)
+                                )
+                            }
                         }
                     )
 

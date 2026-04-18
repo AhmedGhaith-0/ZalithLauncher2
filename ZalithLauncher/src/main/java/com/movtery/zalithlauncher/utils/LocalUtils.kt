@@ -186,6 +186,27 @@ fun LunarCalendar.checkDateRange(month: Int, dayRange: IntRange): Boolean {
     return lunar.month == month && lunar.day in dayRange
 }
 
+/**
+ * 获取简单的语言标签
+ */
+fun Locale.toLangTag(): String {
+    return language + "_" + country.lowercase()
+}
+
+/**
+ * 检查语言标签是否与当前系统匹配
+ * 支持此类格式："zh_cn", "en_us", "zh", "en"
+ */
+fun Locale.compareLangTag(
+    targetTag: String
+): Boolean {
+    return if (targetTag.contains("_")) {
+        toLangTag() == targetTag
+    } else {
+        language == targetTag
+    }
+}
+
 fun copyText(label: String?, text: String?, context: Context, showToast: Boolean = true) {
     val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     clipboardManager.setPrimaryClip(ClipData.newPlainText(label, text))

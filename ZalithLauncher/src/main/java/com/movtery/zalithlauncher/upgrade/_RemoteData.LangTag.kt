@@ -18,24 +18,8 @@
 
 package com.movtery.zalithlauncher.upgrade
 
+import com.movtery.zalithlauncher.utils.compareLangTag
 import java.util.Locale
-
-/**
- * 获取简单的语言标签
- */
-fun Locale.toLangTag(): String {
-    return language + "_" + country.lowercase()
-}
-
-private fun Locale.compareLangTag(
-    targetTag: String
-): Boolean {
-    return if (targetTag.contains("_")) {
-        toLangTag() == targetTag
-    } else {
-        language == targetTag
-    }
-}
 
 /**
  * 根据当前系统语言寻找合适的Body

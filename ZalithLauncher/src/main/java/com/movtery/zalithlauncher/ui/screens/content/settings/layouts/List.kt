@@ -26,8 +26,10 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -73,7 +75,8 @@ private fun <E> BaseListSettingsCard(
     outerShape: Dp = 28.dp,
     innerShape: Dp = 4.dp,
     summary: String? = null,
-    middleLayout: (@Composable () -> Unit)? = null,
+    middleLayout: (@Composable ColumnScope.() -> Unit)? = null,
+    trailingIcon: (@Composable RowScope.() -> Unit)? = null,
     enabled: Boolean = true,
     itemListPadding: PaddingValues = PaddingValues(start = 8.dp, end = 8.dp, bottom = 8.dp),
     titleStyle: TextStyle = MaterialTheme.typography.titleSmall,
@@ -108,14 +111,20 @@ private fun <E> BaseListSettingsCard(
                     Column(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
+                    ) innerColumn@ {
                         TitleAndSummary(
                             title = title,
                             summary = summary,
                             titleStyle = titleStyle,
                             summaryStyle = summaryStyle
                         )
-                        middleLayout?.invoke()
+                        middleLayout?.invoke(this@innerColumn)
+                    }
+                    trailingIcon?.let { trailing ->
+                        Row(
+                            modifier = Modifier.align(Alignment.CenterVertically),
+                            content = trailing
+                        )
                     }
                     val rotation by animateFloatAsState(
                         targetValue = if (expanded) -180f else 0f,
@@ -173,6 +182,7 @@ fun <E> ListSettingsCard(
     getItemText: @Composable (E) -> String,
     getItemId: (E) -> String,
     getItemSummary: (@Composable (E) -> Unit)? = null,
+    trailingIcon: (@Composable RowScope.() -> Unit)? = null,
     enabled: Boolean = true,
     autoCollapse: Boolean = true,
     itemListPadding: PaddingValues = PaddingValues(start = 8.dp, end = 8.dp, bottom = 8.dp),
@@ -225,6 +235,7 @@ fun <E> ListSettingsCard(
                 style = MaterialTheme.typography.labelSmall
             )
         },
+        trailingIcon = trailingIcon,
         enabled = enabled,
         itemListPadding = itemListPadding,
         titleStyle = titleStyle,
@@ -245,6 +256,7 @@ fun <E> ListSettingsCard(
     getItemText: @Composable (E) -> String,
     getItemId: (E) -> String,
     getItemSummary: (@Composable (E) -> Unit)? = null,
+    trailingIcon: (@Composable RowScope.() -> Unit)? = null,
     enabled: Boolean = true,
     autoCollapse: Boolean = true,
     itemListPadding: PaddingValues = PaddingValues(start = 8.dp, end = 8.dp, bottom = 8.dp),
@@ -265,6 +277,7 @@ fun <E> ListSettingsCard(
         getItemText = getItemText,
         getItemId = getItemId,
         getItemSummary = getItemSummary,
+        trailingIcon = trailingIcon,
         enabled = enabled,
         autoCollapse = autoCollapse,
         itemListPadding = itemListPadding,
@@ -336,6 +349,7 @@ fun <E> StringListSettingsCard(
     getItemText: @Composable (E) -> String,
     getItemSummary: (@Composable (E) -> Unit)? = null,
     getItemCheck: (contains: Boolean) -> Boolean = { it },
+    trailingIcon: (@Composable RowScope.() -> Unit)? = null,
     enabled: Boolean = true,
     itemListPadding: PaddingValues = PaddingValues(start = 8.dp, end = 8.dp, bottom = 8.dp),
     titleStyle: TextStyle = MaterialTheme.typography.titleSmall,
@@ -370,6 +384,7 @@ fun <E> StringListSettingsCard(
                 }
             )
         },
+        trailingIcon = trailingIcon,
         modifier = modifier,
         outerShape = outerShape,
         innerShape = innerShape,
