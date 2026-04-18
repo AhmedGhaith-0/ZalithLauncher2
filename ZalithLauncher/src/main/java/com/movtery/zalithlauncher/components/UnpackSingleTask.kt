@@ -23,6 +23,7 @@ import android.content.res.AssetManager
 import com.movtery.zalithlauncher.context.copyAssetFile
 import com.movtery.zalithlauncher.utils.file.readString
 import com.movtery.zalithlauncher.utils.logging.Logger.lInfo
+import com.movtery.zalithlauncher.utils.logging.Logger.lWarning
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.FileInputStream
@@ -44,7 +45,8 @@ abstract class UnpackSingleTask(
             am = context.assets
             versionFile = File("$rootDir/$fileDirName/version")
             input = am.open("$assetsDirName/$fileDirName/version")
-        }.getOrElse {
+        }.onFailure { e ->
+            lWarning("Failed to init asset version. assetsPath=$assetsDirName/$fileDirName/version", e)
             isCheckFailed = true
         }
     }
