@@ -23,10 +23,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -56,6 +60,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.movtery.zalithlauncher.R
 import com.movtery.zalithlauncher.info.InfoDistributor
+import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.activities.CrashType
 import com.movtery.zalithlauncher.ui.components.BackgroundCard
 import com.movtery.zalithlauncher.ui.components.MarqueeText
@@ -120,21 +125,27 @@ private fun ErrorScreenLandscape(
     onExitClick: () -> Unit,
     body: @Composable ColumnScope.() -> Unit
 ) {
-    Column(
+    Scaffold(
+        topBar = {
+            TopBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp),
+                crashType = crashType,
+                contentColor = onBackgroundColor()
+            )
+        },
         modifier = Modifier.fillMaxSize(),
-    ) {
-        TopBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(40.dp),
-            crashType = crashType,
-            contentColor = onBackgroundColor()
-        )
-
+        contentWindowInsets = if (AllSettings.launcherFullScreen.state) {
+            WindowInsets()
+        } else {
+            WindowInsets.safeContent.only(WindowInsetsSides.Horizontal)
+        }
+    ) { innerPadding ->
         Row(
             modifier = Modifier
+                .padding(innerPadding)
                 .fillMaxSize()
-                .weight(1f)
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {

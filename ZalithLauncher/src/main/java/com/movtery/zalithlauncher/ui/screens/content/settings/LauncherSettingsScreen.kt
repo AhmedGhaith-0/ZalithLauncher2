@@ -83,7 +83,6 @@ import com.movtery.zalithlauncher.utils.logging.Logger.lError
 import com.movtery.zalithlauncher.utils.string.getMessageOrToString
 import com.movtery.zalithlauncher.viewmodel.BackgroundViewModel
 import com.movtery.zalithlauncher.viewmodel.ErrorViewModel
-import com.movtery.zalithlauncher.viewmodel.EventViewModel
 import com.movtery.zalithlauncher.viewmodel.LocalBackgroundViewModel
 import kotlinx.coroutines.Dispatchers
 import java.io.File
@@ -99,7 +98,6 @@ fun LauncherSettingsScreen(
     key: NestedNavKey.Settings,
     settingsScreenKey: TitledNavKey?,
     mainScreenKey: TitledNavKey?,
-    eventViewModel: EventViewModel,
     submitError: (ErrorViewModel.ThrowableMessage) -> Unit
 ) {
     val context = LocalContext.current
@@ -190,10 +188,7 @@ fun LauncherSettingsScreen(
                         position = CardPosition.Bottom,
                         unit = AllSettings.launcherFullScreen,
                         title = stringResource(R.string.settings_launcher_full_screen_title),
-                        summary = stringResource(R.string.settings_launcher_full_screen_summary),
-                        onCheckedChange = {
-                            eventViewModel.sendEvent(EventViewModel.Event.RefreshFullScreen)
-                        }
+                        summary = stringResource(R.string.settings_launcher_full_screen_summary)
                     )
                 }
             }

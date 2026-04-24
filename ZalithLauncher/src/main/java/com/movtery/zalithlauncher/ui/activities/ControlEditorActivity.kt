@@ -30,7 +30,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.movtery.layer_controller.layout.ControlLayout
 import com.movtery.layer_controller.layout.loadLayoutFromFile
+import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.base.BaseAppCompatActivity
+import com.movtery.zalithlauncher.ui.base.applyFullscreen
 import com.movtery.zalithlauncher.ui.screens.content.elements.Background
 import com.movtery.zalithlauncher.ui.screens.main.control_editor.ControlEditor
 import com.movtery.zalithlauncher.ui.theme.ZalithLauncherTheme
@@ -87,7 +89,8 @@ class ControlEditorActivity : BaseAppCompatActivity() {
                     contentColor = onBackgroundColor()
                 ) {
                     BoxWithConstraints(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .applyFullscreen(AllSettings.launcherFullScreen.state)
                     ) {
                         Background(
                             modifier = Modifier.fillMaxSize(),

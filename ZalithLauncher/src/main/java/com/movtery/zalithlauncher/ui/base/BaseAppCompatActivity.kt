@@ -25,7 +25,6 @@ import com.movtery.zalithlauncher.game.account.AccountsManager
 import com.movtery.zalithlauncher.game.path.GamePathManager
 import com.movtery.zalithlauncher.game.plugin.PluginLoader
 import com.movtery.zalithlauncher.game.renderer.Renderers
-import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.setting.loadAllSettings
 import com.movtery.zalithlauncher.utils.checkStoragePermissionsForInit
 import dagger.hilt.android.AndroidEntryPoint
@@ -58,20 +57,6 @@ open class BaseAppCompatActivity(
         super.onResume()
         loadAllSettings(this, true)
         checkStoragePermissions()
-    }
-
-    override fun getWindowMode(): WindowMode {
-        runCatching {
-            return if (AllSettings.launcherFullScreen.getValue()) {
-                WindowMode.FULL_IMMERSIVE
-            } else {
-                WindowMode.DEFAULT
-            }
-        }
-        //AllSettings初始化出现异常（MMKV在Application未正常初始化）
-        //不出意外应该正在展示FatalErrorActivity，忽略并关闭当前Activity
-        finish()
-        return WindowMode.DEFAULT
     }
 
     private fun refreshData() {

@@ -23,35 +23,19 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import androidx.annotation.CallSuper
-import androidx.annotation.RequiresApi
-
-enum class WindowMode {
-    DEFAULT,
-    FULL_IMMERSIVE
-}
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 
 abstract class FullScreenAppCompatActivity : AbstractAppCompatActivity() {
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
-        applyFullscreen(getWindowMode())
         super.onCreate(savedInstanceState)
+        applyFullImmersive()
     }
-
-    @CallSuper
-    override fun onPostResume() {
-        super.onPostResume()
-        applyFullscreen(getWindowMode())
-    }
-
-    @CallSuper
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) {
-            applyFullscreen(getWindowMode())
-        }
-    }
-
-    abstract fun getWindowMode(): WindowMode
 
     @Suppress("DEPRECATION")
     private val systemUIVisibility = (
@@ -64,65 +48,21 @@ abstract class FullScreenAppCompatActivity : AbstractAppCompatActivity() {
             )
 
     @Suppress("DEPRECATION")
-    private fun applyFullscreen(mode: WindowMode) {
-        if (window != null) {
-            when (mode) {
-                WindowMode.DEFAULT -> {
-                    applyDefault()
-                }
-                WindowMode.FULL_IMMERSIVE -> {
-                    if (isInMultiWindowMode) {
-                        applyDefault()
-                    } else {
-                        applyFullImmersive()
-                    }
-                }
-            }
-        }
-    }
-
-    @Suppress("DEPRECATION")
-    private fun applyDefault() {
-        if (window != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                applyWindowAttributes(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER)
-            }
-
-            window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
-            window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN) //隐藏状态栏
-            window.decorView.systemUiVisibility = (
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            or View.SYSTEM_UI_FLAG_FULLSCREEN
-                            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    )
-        }
-    }
-
-    @Suppress("DEPRECATION")
     private fun applyFullImmersive() {
-        if (window != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                applyWindowAttributes(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES)
-            }
-
-            window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
-            window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-            window.decorView.systemUiVisibility = systemUIVisibility
+        window?.decorView?.systemUiVisibility = systemUIVisibility
+        if (Build.VERSION.SDK_INT >= 28) {
+            val attributes: WindowManager.LayoutParams = window.attributes
+            attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            window.setAttributes(attributes)
         }
     }
+}
 
-    @RequiresApi(Build.VERSION_CODES.P)
-    private fun applyWindowAttributes(newParams: Int) {
-        val params = window.attributes
-        if (params.layoutInDisplayCutoutMode != newParams) {
-            params.layoutInDisplayCutoutMode = newParams
-            window.attributes = params
-        }
-    }
-
-    protected fun refreshWindow() {
-        applyFullscreen(getWindowMode())
-    }
+@Composable
+fun Modifier.applyFullscreen(value: Boolean): Modifier {
+    val modifier = Modifier.fillMaxSize()
+    return then(
+        if (value) modifier
+        else modifier.windowInsetsPadding(WindowInsets.displayCutout)
+    )
 }

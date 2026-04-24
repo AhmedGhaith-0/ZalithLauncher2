@@ -82,7 +82,7 @@ import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.path.PathManager
 import com.movtery.zalithlauncher.setting.AllSettings
 import com.movtery.zalithlauncher.ui.base.BaseAppCompatActivity
-import com.movtery.zalithlauncher.ui.base.WindowMode
+import com.movtery.zalithlauncher.ui.base.applyFullscreen
 import com.movtery.zalithlauncher.ui.components.rememberBoxSize
 import com.movtery.zalithlauncher.ui.control.input.HidableInputLayout
 import com.movtery.zalithlauncher.ui.control.input.TextInputMode
@@ -650,14 +650,6 @@ class VMActivity : BaseAppCompatActivity(), SurfaceTextureListener, SurfaceHolde
         withHandler { mIsSurfaceDestroyed = true }
     }
 
-    override fun getWindowMode(): WindowMode {
-        return if (AllSettings.gameFullScreen.getValue()) {
-            WindowMode.FULL_IMMERSIVE
-        } else {
-            WindowMode.DEFAULT
-        }
-    }
-
     @Composable
     private fun Screen(
         content: @Composable () -> Unit = {}
@@ -667,7 +659,7 @@ class VMActivity : BaseAppCompatActivity(), SurfaceTextureListener, SurfaceHolde
 
         BoxWithConstraints(
             modifier = Modifier
-                .fillMaxSize()
+                .applyFullscreen(AllSettings.gameFullScreen.state)
                 .background(Color.Black)
         ) {
             val screenSize = rememberBoxSize()

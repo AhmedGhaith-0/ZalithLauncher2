@@ -165,11 +165,6 @@ class MainActivity : BaseAppCompatActivity() {
                             this@MainActivity.openLink(url)
                         }
                     }
-                    is EventViewModel.Event.RefreshFullScreen -> {
-                        lifecycleScope.launch(Dispatchers.Main) {
-                            refreshWindow()
-                        }
-                    }
                     is EventViewModel.Event.CheckUpdate -> {
                         lifecycleScope.launch(Dispatchers.IO) {
                             try {
