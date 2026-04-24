@@ -22,7 +22,6 @@ lunarcalendar = "4.0.7"
 material = "1.13.0"
 material3 = "1.5.0-alpha18"
 materialColorUtilities = "4.1.1"
-materialIcons = "1.7.8"
 mavenArtifact = "3.9.15"
 media3Exoplayer = "1.10.0"
 minidnsHla = "1.1.1"
@@ -66,8 +65,6 @@ androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-ru
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIcons" }
-androidx-material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "materialIcons" }
 androidx-navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3" }
 androidx-navigation3-ui = { group = "androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
 androidx-lifecycle-viewmodel-nav3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "navigation3Lifecycle" }
