@@ -151,6 +151,18 @@ fun isFilenameInvalid(
 }
 
 @Composable
+fun isFilenameInvalid(
+    str: String
+): String? {
+    return try {
+        checkFilenameValidity(str)
+        null
+    } catch (e: InvalidFilenameException) {
+        e.getInvalidSummary()
+    }
+}
+
+@Composable
 fun InvalidFilenameException.getInvalidSummary(): String = when {
     containsIllegalCharacters() -> stringResource(R.string.generic_input_invalid_character, illegalCharacters)
     isInvalidLength -> stringResource(R.string.file_invalid_length, invalidLength, 255)
