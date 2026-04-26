@@ -1025,4 +1025,168 @@
     <string name="upgrade_version_create_at">Actualizado en: %s</string>
     <string name="upgrade_get_remote_failed">Error al buscar actualizaciones. Por favor, inténtalo de nuevo más tarde.</string>
     <string name="upgrade_is_latest">Ya estás en la última versión</string>
+    <string name="versions_export_type_mcbbs_summary"></string>
+    <string name="vibrate_kind_double_click"></string>
+    <string name="versions_export_task_generate_pack"></string>
+    <string name="unpack_screen_jna"></string>
+    <string name="game_saponsorship_finished_game"></string>
+    <string name="page_title_account_list"></string>
+    <string name="language_english" translatable="false"></string>
+    <string name="versions_export_alias_resource_packs"></string>
+    <string name="servers_list_undefined"></string>
+    <string name="festivals_april_fools"></string>
+    <string name="settings_gamepad_config_create"></string>
+    <string name="settings_launcher_language"></string>
+    <string name="account_local_uuid_tip_1"></string>
+    <string name="versions_export_pack_select_files"></string>
+    <string name="control_editor_edit_style_config_delete"></string>
+    <string name="url_wiki_minecraft_game_snapshot"></string>
+    <string name="account_local_uuid_tip_3"></string>
+    <string name="screenshots_manage_export_failed"></string>
+    <string name="account_local_uuid_tip_2"></string>
+    <string name="account_local_uuid_copied"></string>
+    <string name="versions_export_task_finished"></string>
+    <string name="versions_export_pack_files"></string>
+    <string name="language_uyghur" translatable="false"></string>
+    <string name="servers_list_copy_server_address"></string>
+    <string name="servers_list_players_full"></string>
+    <string name="download_game_version_overwrite"></string>
+    <string name="servers_list_delete_server"></string>
+    <string name="settings_game_graphics_api_default_opengl"></string>
+    <string name="files_delete_file"></string>
+    <string name="about_acknowledgements_mcim_text"></string>
+    <string name="screenshots_manage_export_all_message"></string>
+    <string name="control_editor_layers_attribute_hide_when_joystick"></string>
+    <string name="versions_export_pack_summary_hint"></string>
+    <string name="screenshots_manage"></string>
+    <string name="settings_launcher_festivals_effects_summary"></string>
+    <string name="settings_gamepad_config_summary"></string>
+    <string name="language_portuguese" translatable="false"></string>
+    <string name="page_title_version_manage"></string>
+    <string name="versions_export"></string>
+    <string name="account_change_skin_arm_slim"></string>
+    <string name="versions_export_type_modrinth"></string>
+    <string name="cape_name_minecon2013"></string>
+    <string name="settings_gamepad_config_delete"></string>
+    <string name="servers_list_add_server_ip"></string>
+    <string name="versions_export_pack_summary"></string>
+    <string name="vibrate_kind_tick"></string>
+    <string name="empty_holder" translatable="false"></string>
+    <string name="cape_name_minecon2016"></string>
+    <string name="versions_export_type_mcbbs"></string>
+    <string name="settings_renderer_surface_summary"></string>
+    <string name="settings_launcher_mirror_assets_search_title"></string>
+    <string name="versions_export_alias_config"></string>
+    <string name="servers_list_no_servers"></string>
+    <string name="download_install_warning_mobile_data"></string>
+    <string name="language_arabic" translatable="false"></string>
+    <string name="versions_config_vibrate_kind_title"></string>
+    <string name="screenshots_manage_export_selected_message"></string>
+    <string name="control_editor_layers_delete"></string>
+    <string name="language_italian" translatable="false"></string>
+    <string name="versions_install_loader"></string>
+    <string name="settings_game_graphics_api_summary"></string>
+    <string name="plugin_download_summary"></string>
+    <string name="crash_link_share_failed_link_not_found"></string>
+    <string name="versions_export_alias_mods"></string>
+    <string name="page_title_version_list"></string>
+    <string name="download_game_version_overwrite_select"></string>
+    <string name="language_turkish" translatable="false"></string>
+    <string name="control_manage_import"></string>
+    <string name="servers_list_add_server"></string>
+    <string name="language_vietnamese" translatable="false"></string>
+    <string name="versions_export_alias_saves"></string>
+    <string name="versions_export_pack_website"></string>
+    <string name="language_simplified_chinese" translatable="false"></string>
+    <string name="versions_export_task_fetch_remote"></string>
+    <string name="servers_list"></string>
+    <string name="screenshots_manage_no_screenshots"></string>
+    <string name="settings_gamepad_config_create_name"></string>
+    <string name="account_change_skin_arm_style"></string>
+    <string name="settings_gamepad_config_create_contains"></string>
+    <string name="plugin_download_title"></string>
+    <string name="language_japanese" translatable="false"></string>
+    <string name="settings_gamepad_config_no_items"></string>
+    <string name="versions_export_alias_options"></string>
+    <string name="servers_list_add_server_name"></string>
+    <string name="upgrade_cloud_drive"></string>
+    <string name="account_local_uuid_copy"></string>
+    <string name="account_local_uuid" translatable="false"></string>
+    <string name="screenshots_manage_export_title"></string>
+    <string name="versions_config_vibrate_kind_summary"></string>
+    <string name="files_importing"></string>
+    <string name="versions_export_pack_name"></string>
+    <string name="game_styles_joystick_lock_threshold"></string>
+    <string name="crash_link_share_tip"></string>
+    <string name="crash_link_share_button"></string>
+    <string name="versions_export_pack_max_memory"></string>
+    <string name="versions_export_pack_select_folder_message"></string>
+    <string name="language_spanish" translatable="false"></string>
+    <string name="versions_export_task_error_title"></string>
+    <string name="url_wiki_minecraft_game_release"></string>
+    <string name="festivals_christmas"></string>
+    <string name="vibrate_kind_one_shot"></string>
+    <string name="crash_link_share_failed"></string>
+    <string name="versions_export_type_multimc_summary"></string>
+    <string name="versions_overview_cant_share_folder_message"></string>
+    <string name="cape_name_minecon2015"></string>
+    <string name="screenshots_manage_export_success"></string>
+    <string name="crash_link_share_uploading"></string>
+    <string name="plugin_unsupported_warning"></string>
+    <string name="screenshots_manage_export"></string>
+    <string name="servers_list_failed_to_connect"></string>
+    <string name="language_brazilian_portuguese" translatable="false"></string>
+    <string name="servers_list_delete_server_text"></string>
+    <string name="versions_export_alias_launcher"></string>
+    <string name="versions_export_pack_select_output"></string>
+    <string name="account_local_uuid_tip_4"></string>
+    <string name="download_game_version_overwrite_select_subtitle"></string>
+    <string name="control_editor_edit_dialog_delete_widget"></string>
+    <string name="versions_export_pack_pack_remote"></string>
+    <string name="versions_export_type_summary_common"></string>
+    <string name="account_advanced"></string>
+    <string name="about_acknowledgements_mcmod"></string>
+    <string name="versions_export_alias_shaderpacks"></string>
+    <string name="settings_game_native_lib_plugin_summary"></string>
+    <string name="versions_export_pack_also_pack_curseforge"></string>
+    <string name="files_browse_folder"></string>
+    <string name="versions_export_task_pack_manifest"></string>
+    <string name="versions_export_pack_select_folder_title"></string>
+    <string name="account_local_uuid_invalid"></string>
+    <string name="language_filipino" translatable="false"></string>
+    <string name="versions_export_pack_author"></string>
+    <string name="language_traditional_chinese" translatable="false"></string>
+    <string name="settings_game_graphics_api_title"></string>
+    <string name="account_type_local"></string>
+    <string name="unpack_screen_jre25"></string>
+    <string name="language_thai" translatable="false"></string>
+    <string name="language_korean" translatable="false"></string>
+    <string name="settings_game_native_lib_plugin_title"></string>
+    <string name="servers_list_edit_server"></string>
+    <string name="settings_gamepad_config_title"></string>
+    <string name="versions_export_pack_version"></string>
+    <string name="language_indonesian" translatable="false"></string>
+    <string name="festivals_new_year"></string>
+    <string name="servers_list_add_server_default_name"></string>
+    <string name="vibrate_kind_heavy_click"></string>
+    <string name="versions_export_pack_java_args"></string>
+    <string name="versions_export_type_multimc"></string>
+    <string name="control_editor_edit_style_config_common_style"></string>
+    <string name="versions_export_pack_jvm_args"></string>
+    <string name="settings_game_graphics_api_default"></string>
+    <string name="about_launcher_author_movtery_title"></string>
+    <string name="settings_launcher_mirror_assets_download_title"></string>
+    <string name="language_russian" translatable="false"></string>
+    <string name="vibrate_kind_click"></string>
+    <string name="settings_launcher_festivals_effects_title"></string>
+    <string name="mods_update_task_loading"></string>
+    <string name="settings_gamepad_config_delete_message"></string>
+    <string name="generic_copied"></string>
+    <string name="page_title_select_files"></string>
+    <string name="versions_export_pack_dir_empty"></string>
+    <string name="account_change_skin_arm_wide"></string>
+    <string name="versions_export_type_curseforge"></string>
+    <string name="cape_name_minecon2012"></string>
+    <string name="versions_export_task_error_message"></string>
+    <string name="settings_renderer_surface_title"></string>
 </resources>
