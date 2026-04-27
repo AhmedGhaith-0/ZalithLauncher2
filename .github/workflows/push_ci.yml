@@ -7,10 +7,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  Build:
+  build:
+    permissions:
+      contents: write
     uses: ./.github/workflows/build.yml
     with:
-      variant: Debug
+      variant: 'Release'
+    secrets: inherit
     secrets:
       KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
