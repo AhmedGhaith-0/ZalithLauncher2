@@ -20,14 +20,14 @@ package com.movtery.zalithlauncher.game.account
 
 import android.content.Context
 import com.movtery.zalithlauncher.R
+import com.movtery.zalithlauncher.context.GlobalContext
 import com.movtery.zalithlauncher.coroutine.Task
 import com.movtery.zalithlauncher.coroutine.TaskSystem
 import com.movtery.zalithlauncher.database.AppDatabase
 import com.movtery.zalithlauncher.game.account.auth_server.data.AuthServer
 import com.movtery.zalithlauncher.game.account.auth_server.data.AuthServerDao
-import com.movtery.zalithlauncher.path.PathManager
 import com.movtery.zalithlauncher.setting.AllSettings
-import com.movtery.zalithlauncher.utils.isInGreaterChina
+import com.movtery.zalithlauncher.utils.isChinaMainland
 import com.movtery.zalithlauncher.utils.logging.Logger.lError
 import com.movtery.zalithlauncher.utils.logging.Logger.lInfo
 import com.movtery.zalithlauncher.utils.network.isNetworkAvailable
@@ -38,7 +38,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apache.commons.io.FileUtils
-import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 
 object AccountsManager {
@@ -105,7 +104,7 @@ object AccountsManager {
         _accountsFlow.value = _accounts.toList()
 
         if (_accounts.isNotEmpty() && !isAccountExists(AllSettings.currentAccount.getValue())) {
-            setCurrentAccountInternal(_accounts[0])
+            setCurrentAccount(_accounts[0])
         }
 
         refreshCurrentAccountState()
@@ -198,12 +197,8 @@ object AccountsManager {
      * 设置并保存当前账号
      */
     fun setCurrentAccount(account: Account) {
-        setCurrentAccountInternal(account)
-        refreshCurrentAccountState()
-    }
-
-    private fun setCurrentAccountInternal(account: Account) {
         AllSettings.currentAccount.save(account.uniqueUUID)
+        refreshCurrentAccountState()
     }
 
     /**
@@ -211,17 +206,12 @@ object AccountsManager {
      */
     private fun refreshCurrentAccountState() {
         val currentAccount = getCurrentAccount()
-        val isOffline = checkLimit()
+        val isOffline = false
         _currentAccountFlow.update {
             //若处于非正版状态，不允许使用账号
             if (isOffline) null else currentAccount
         }
         _isOffline.update { isOffline }
-    }
-
-    private fun checkLimit(): Boolean {
-        val circumventLimit = File(PathManager.DIR_FILES_EXTERNAL, "circumventLimit")
-        return !circumventLimit.exists() && !isInGreaterChina() && !hasMicrosoftAccount()
     }
 
     /**
@@ -240,8 +230,6 @@ object AccountsManager {
         runCatching {
             accountDao.saveAccount(account)
             lInfo("Saved account: ${account.username}")
-            //同时设置当前账号
-            setCurrentAccountInternal(account)
         }.onFailure { e ->
             lError("Failed to save account: ${account.username}", e)
         }
