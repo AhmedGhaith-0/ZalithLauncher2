@@ -37,10 +37,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -155,7 +155,7 @@ fun MultiplayerDialog(
                                         modifier = commonModifier,
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        CircularProgressIndicator()
+                                        LoadingIndicator()
                                     }
                                 }
                                 is TerracottaState.Waiting -> {
@@ -343,7 +343,7 @@ private fun WaitingUI(
 
         //禁止交互时，提示用户正在加载中
         if (!isInteractive) {
-            CircularProgressIndicator()
+            LoadingIndicator()
         }
     }
 
