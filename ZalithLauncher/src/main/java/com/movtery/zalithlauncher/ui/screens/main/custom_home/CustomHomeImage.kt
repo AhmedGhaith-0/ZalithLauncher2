@@ -18,8 +18,6 @@
 
 package com.movtery.zalithlauncher.ui.screens.main.custom_home
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,20 +35,11 @@ import coil3.compose.AsyncImage
 @Composable
 fun CustomHomeImage(
     url: String,
-    width: MarkdownBlock.Image.Width?,
     modifier: Modifier = Modifier,
     shape: Shape? = null,
 ) {
-    val finalModifier = modifier.then(
-        when (width) {
-            is MarkdownBlock.Image.Width.DP -> Modifier.width(width.value)
-            is MarkdownBlock.Image.Width.Percent -> Modifier.fillMaxWidth(width.value)
-            else -> Modifier
-        }
-    )
-
     AsyncImage(
-        modifier = finalModifier.clip(shape ?: RoundedCornerShape(0.dp)),
+        modifier = modifier.clip(shape ?: RoundedCornerShape(0.dp)),
         model = url,
         alignment = Alignment.Center,
         contentScale = ContentScale.FillWidth,

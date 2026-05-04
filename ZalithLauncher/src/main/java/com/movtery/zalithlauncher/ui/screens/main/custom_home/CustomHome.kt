@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -88,20 +89,39 @@ private fun BlockItem(
     richTextStyle: RichTextStyle = defaultRichTextStyle(),
     onEvent: (MarkdownBlock.Button.Event) -> Unit
 ) {
+    val weight = block.weight
+    val widthInfo = block.width
+
+    val isContentComponent = block is MarkdownBlock.Button || block is MarkdownBlock.Image
+
+    val finalModifier = if (weight != null && isInsideFlex) {
+        modifier
+    } else if (widthInfo != null) {
+        when (widthInfo) {
+            is MarkdownBlock.Width.DP -> Modifier.width(widthInfo.value)
+            is MarkdownBlock.Width.Percent -> Modifier.fillMaxWidth(widthInfo.value)
+        }
+    } else if (!isInsideFlex && !isContentComponent) {
+        //布局组件在根布局，且未配置 width 时默认填充宽度
+        Modifier.fillMaxWidth()
+    } else {
+        modifier
+    }
+
     when (block) {
         is MarkdownBlock.Normal -> {
             MarkdownView(
                 node = block.astNode,
-                modifier = modifier,
+                modifier = finalModifier,
                 richTextStyle = richTextStyle
             )
         }
         is MarkdownBlock.Card -> {
             CustomHomeCard(
-                modifier = modifier,
+                modifier = finalModifier,
                 title = block.title,
-                shape = parseShape(block.params),
-                contentPadding = parseCardPadding(block.params)
+                shape = block.shape?.toShape(),
+                contentPadding = block.contentPadding
             ) {
                 MarkdownInnerRenderer(
                     blocks = block.content,
@@ -115,7 +135,7 @@ private fun BlockItem(
         }
         is MarkdownBlock.Button -> {
             CustomHomeButton(
-                modifier = modifier,
+                modifier = finalModifier,
                 text = block.text,
                 event = block.event,
                 type = block.style,
@@ -123,25 +143,22 @@ private fun BlockItem(
             )
         }
         is MarkdownBlock.Image -> {
-            val hasWeight = parseWeight(block.params) != null
-            val useWeight = isInsideFlex && hasWeight
             CustomHomeImage(
-                modifier = modifier,
+                modifier = finalModifier,
                 url = block.url,
-                width = if (useWeight) null else block.width,
-                shape = parseShape(block.params)
+                shape = block.shape?.toShape()
             )
         }
         is MarkdownBlock.RowBlock -> {
             Row(
                 horizontalArrangement = block.horizontal,
                 verticalAlignment = block.vertical,
-                modifier = modifier.fillMaxWidth()
+                modifier = finalModifier
             ) {
                 block.children.forEach { child ->
-                    val weightInfo = parseWeight(child.params)
-                    val childModifier = if (weightInfo != null) {
-                        Modifier.weight(weightInfo.first, weightInfo.second)
+                    val childWeight = child.weight
+                    val childModifier = if (childWeight != null) {
+                        Modifier.weight(childWeight.first, childWeight.second)
                     } else {
                         Modifier
                     }
@@ -159,7 +176,7 @@ private fun BlockItem(
             Column(
                 horizontalAlignment = block.horizontal,
                 verticalArrangement = block.vertical,
-                modifier = modifier.fillMaxWidth()
+                modifier = finalModifier
             ) {
                 block.children.forEach { child ->
                     BlockItem(
@@ -178,6 +195,13 @@ private fun BlockItem(
 sealed interface MarkdownBlock {
     val stableKey: Any
     val params: String
+    val width: Width?
+    val weight: Pair<Float, Boolean>?  //Modifier.weight(value, fill)
+
+    sealed interface Width {
+        data class Percent(val value: Float) : Width
+        data class DP(val value: Dp) : Width
+    }
 
     /**
      * 普通的Markdown内容
@@ -185,6 +209,8 @@ sealed interface MarkdownBlock {
     data class Normal(val astNode: AstNode) : MarkdownBlock {
         override val stableKey: Any get() = astNode.hashCode()
         override val params: String get() = ""
+        override val width: Width? = null
+        override val weight: Pair<Float, Boolean>? = null
     }
 
     /**
@@ -192,13 +218,19 @@ sealed interface MarkdownBlock {
      * @param title 卡片的标题，必须存在，如果字符串内容不为空，则正常显示标题，如果为空，则不显示标题
      * @param params 卡片的参数字符串
      * @param content 卡片内部的组件
+     * @param shape 预解析的形状规格
+     * @param contentPadding 预解析的内边距
      */
     data class Card(
         val title: String,
         override val params: String,
-        val content: List<MarkdownBlock>
+        val content: List<MarkdownBlock>,
+        val shape: ShapeSpec?,
+        val contentPadding: PaddingValues?
     ) : MarkdownBlock {
-        override val stableKey: Any get() = "card_${title}_${params.hashCode()}_${content.hashCode()}"
+        override val stableKey: Any get() = "card_${title}_${params.hashCode()}_${content.hashCode()}_${shape}_${contentPadding}"
+        override val width: Width? = null
+        override val weight: Pair<Float, Boolean>? = null
     }
 
     /**
@@ -211,9 +243,11 @@ sealed interface MarkdownBlock {
         val text: String,
         val event: Event?,
         val style: HomeButtonType,
-        override val params: String
+        override val width: Width?,
+        override val params: String,
+        override val weight: Pair<Float, Boolean>?
     ) : MarkdownBlock {
-        override val stableKey: Any get() = "btn_${text}_${event}_${style}_${params.hashCode()}"
+        override val stableKey: Any get() = "btn_${text}_${event}_${style}_${width}_${params.hashCode()}_$weight"
 
         /**
          * 按钮事件
@@ -228,18 +262,16 @@ sealed interface MarkdownBlock {
      * 图片组件
      * @param url 必须携带的图片链接
      * @param width 可选的宽度属性
+     * @param shape 预解析的形状规格
      */
     data class Image(
         val url: String,
-        val width: Width?,
-        override val params: String
+        override val width: Width?,
+        override val params: String,
+        val shape: ShapeSpec?,
+        override val weight: Pair<Float, Boolean>?
     ) : MarkdownBlock {
-        override val stableKey: Any get() = "img_${url}_width=${width}_${params.hashCode()}"
-
-        sealed interface Width {
-            data class Percent(val value: Float): Width
-            data class DP(val value: Dp): Width
-        }
+        override val stableKey: Any get() = "img_${url}_width=${width}_${params.hashCode()}_${shape}_$weight"
     }
 
     /**
@@ -249,9 +281,11 @@ sealed interface MarkdownBlock {
         val horizontal: Arrangement.Horizontal,
         val vertical: Alignment.Vertical,
         val children: List<MarkdownBlock>,
-        override val params: String
+        override val width: Width?,
+        override val params: String,
+        override val weight: Pair<Float, Boolean>?
     ) : MarkdownBlock {
-        override val stableKey: Any get() = "row_${params.hashCode()}_${children.hashCode()}"
+        override val stableKey: Any get() = "row_${width}_${params.hashCode()}_${children.hashCode()}_$weight"
     }
 
     /**
@@ -261,10 +295,54 @@ sealed interface MarkdownBlock {
         val horizontal: Alignment.Horizontal,
         val vertical: Arrangement.Vertical,
         val children: List<MarkdownBlock>,
-        override val params: String
+        override val width: Width?,
+        override val params: String,
+        override val weight: Pair<Float, Boolean>?
     ) : MarkdownBlock {
-        override val stableKey: Any get() = "col_${params.hashCode()}_${children.hashCode()}"
+        override val stableKey: Any get() = "col_${width}_${params.hashCode()}_${children.hashCode()}_$weight"
     }
+}
+
+/**
+ * 形状规格，在解析阶段预定义形状
+ */
+sealed interface ShapeSpec {
+    /**
+     * [androidx.compose.material3.ShapeDefaults.ExtraSmall]
+     */
+    object ExtraSmall : ShapeSpec
+    /**
+     * [androidx.compose.material3.ShapeDefaults.Small]
+     */
+    object Small : ShapeSpec
+    /**
+     * [androidx.compose.material3.ShapeDefaults.Medium]
+     */
+    object Medium : ShapeSpec
+    /**
+     * [androidx.compose.material3.ShapeDefaults.Large]
+     */
+    object Large : ShapeSpec
+    /**
+     * [androidx.compose.material3.ShapeDefaults.ExtraLarge]
+     */
+    object ExtraLarge : ShapeSpec
+    data class RoundedCornerDP(val size: Dp) : ShapeSpec
+    data class RoundedCornerPercent(val percent: Int) : ShapeSpec
+}
+
+/**
+ * 将形状规格转换为实际的 Compose Shape
+ */
+@Composable
+fun ShapeSpec.toShape(): Shape = when (this) {
+    ShapeSpec.ExtraSmall -> MaterialTheme.shapes.extraSmall
+    ShapeSpec.Small -> MaterialTheme.shapes.small
+    ShapeSpec.Medium -> MaterialTheme.shapes.medium
+    ShapeSpec.Large -> MaterialTheme.shapes.large
+    ShapeSpec.ExtraLarge -> MaterialTheme.shapes.extraLarge
+    is ShapeSpec.RoundedCornerDP -> RoundedCornerShape(size)
+    is ShapeSpec.RoundedCornerPercent -> RoundedCornerShape(percent)
 }
 
 
@@ -360,7 +438,9 @@ private fun parseMarkdownBlocksInternal(
                                 cleared = innerContent,
                                 parseMarkdown = parseMarkdown,
                                 allowCard = false, //不允许内部嵌套卡片组件
-                            )
+                            ),
+                            shape = parseShape(params),
+                            contentPadding = parseCardPadding(params)
                         )
                     )
                     lastIndex = closingRange.last + 1
@@ -403,10 +483,12 @@ private fun parseMarkdownBlocksInternal(
 
                     blocks.add(
                         MarkdownBlock.RowBlock(
-                            horizontal = parseHorizontalArrangement(params = params),
+                            horizontal = parseHorizontalArrangement(params),
                             vertical = parseVerticalAlignment(params),
                             children = children,
-                            params = params
+                            width = parseWidth(params),
+                            params = params,
+                            weight = parseWeight(params)
                         )
                     )
                     lastIndex = closingRange.last + 1
@@ -444,10 +526,12 @@ private fun parseMarkdownBlocksInternal(
 
                     blocks.add(
                         MarkdownBlock.ColumnBlock(
-                            horizontal = parseHorizontalAlignment(params = params),
-                            vertical = parseVerticalArrangement(params = params),
+                            horizontal = parseHorizontalAlignment(params),
+                            vertical = parseVerticalArrangement(params),
                             children = children,
-                            params = params
+                            width = parseWidth(params),
+                            params = params,
+                            weight = parseWeight(params)
                         )
                     )
                     lastIndex = closingRange.last + 1
@@ -525,6 +609,9 @@ private fun findNestedClosingTag(
     return null
 }
 
+
+
+
 private val buttonTextRegex = Regex("""text\s*=\s*"([^"]*)"""")
 private val buttonEventRegex = Regex("""event\s*=\s*"([^"]*)"""")
 private val buttonEventDataRegex = Regex("""^([^\s{]+)(?:\s*\{([\s\S]*)\})?$""")
@@ -550,7 +637,9 @@ private fun parseButton(
         text = text,
         event = event,
         style = style,
-        params = params
+        width = parseWidth(params),
+        params = params,
+        weight = parseWeight(params)
     )
 }
 
@@ -627,24 +716,23 @@ private fun parseHorizontalAlignment(params: String): Alignment.Horizontal {
 }
 
 private val shapeRegex = Regex("""shape\s*=\s*([^\s\t\n]+)""")
-@Composable
-private fun parseShape(params: String): Shape? {
+private fun parseShape(params: String): ShapeSpec? {
     val shapeValue = shapeRegex.find(params)?.groupValues?.get(1) ?: return null
     return when (shapeValue) {
-        "extraSmall" -> MaterialTheme.shapes.extraSmall
-        "small" -> MaterialTheme.shapes.small
-        "medium" -> MaterialTheme.shapes.medium
-        "large" -> MaterialTheme.shapes.large
-        "extraLarge" -> MaterialTheme.shapes.extraLarge
+        "extraSmall" -> ShapeSpec.ExtraSmall
+        "small" -> ShapeSpec.Small
+        "medium" -> ShapeSpec.Medium
+        "large" -> ShapeSpec.Large
+        "extraLarge" -> ShapeSpec.ExtraLarge
         else -> {
             when {
                 shapeValue.endsWith("dp") -> {
                     val size = shapeValue.dropLast(2).toFloatOrNull() ?: return null
-                    RoundedCornerShape(size.dp)
+                    ShapeSpec.RoundedCornerDP(size.dp)
                 }
                 shapeValue.endsWith("%") -> {
                     val percent = shapeValue.dropLast(1).toIntOrNull() ?: return null
-                    RoundedCornerShape(percent)
+                    ShapeSpec.RoundedCornerPercent(percent)
                 }
                 else -> null
             }
@@ -657,9 +745,7 @@ private fun parseCardPadding(params: String): PaddingValues? {
     val match = paddingRegex.find(params) ?: return null
     val values = match.groupValues[1]
         .split(",")
-        .map {
-            it.trim().toFloatOrNull() ?: 0f
-        }
+        .mapNotNull { it.trim().toFloatOrNull() }
     return when (values.size) {
         1 -> PaddingValues(
             all = values[0].dp
@@ -680,30 +766,34 @@ private fun parseCardPadding(params: String): PaddingValues? {
 
 private val urlRegex = Regex("""url\s*=\s*"([^"]*)"""")
 private val widthRegex = Regex("""width\s*=\s*(\d+%|\d+(?:\.\d+)?dp)""")
-private fun parseImage(params: String): MarkdownBlock.Image? {
-    val url = urlRegex.find(params)?.groupValues?.get(1) ?: return null
-    val widthParam = widthRegex.find(params)?.groupValues?.get(1)?.let { w ->
+private fun parseWidth(params: String): MarkdownBlock.Width? {
+    return widthRegex.find(params)?.groupValues?.get(1)?.let { w ->
         when {
             w.endsWith("%") -> {
                 val percent = w.dropLast(1).toIntOrNull() ?: 100
-                MarkdownBlock.Image.Width.Percent((percent.toFloat() / 100f).coerceIn(0f, 1f))
+                MarkdownBlock.Width.Percent((percent.toFloat() / 100f).coerceIn(0f, 1f))
             }
             w.endsWith("dp") -> {
                 val value = w.dropLast(2).toFloatOrNull() ?: 0f
-                MarkdownBlock.Image.Width.DP(value.dp)
+                MarkdownBlock.Width.DP(value.dp)
             }
-            else -> return null
+            else -> null
         }
     }
+}
 
+private fun parseImage(params: String): MarkdownBlock.Image? {
+    val url = urlRegex.find(params)?.groupValues?.get(1) ?: return null
     return MarkdownBlock.Image(
         url = url,
-        width = widthParam,
-        params = params
+        width = parseWidth(params),
+        params = params,
+        shape = parseShape(params),
+        weight = parseWeight(params)
     )
 }
 
-private val weightRegex = Regex("""weight\s*=\s*\(([\d.]+)(?:,\s*(noFill))?\)""")
+private val weightRegex = Regex("""weight\s*(?:=\s*)?\(([\d.]+)(?:,\s*(noFill))?\)""")
 private fun parseWeight(params: String): Pair<Float, Boolean>? {
     val match = weightRegex.find(params) ?: return null
     val weight = match.groupValues[1].toFloatOrNull() ?: return null

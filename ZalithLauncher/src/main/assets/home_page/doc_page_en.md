@@ -59,6 +59,7 @@ contentPadding=(12, 8)
 contentPadding=(4, 4, 12, 12)
 ...card-end
 
+> The card component does not support `width` and `weight` attributes; its width always follows the homepage width.
 
 ---
 
@@ -86,11 +87,22 @@ Creates a clickable button.
     - `check_update`: Triggers the launcher to check for updates.
     - `launch_game`: Launches the currently selected version.
     - `copy{...}`: Copies the specified content.
+    - For more events, please refer to the launcher's actual supported list.
+- `width`: The width of the button, optional.
+    - You can use a percentage width, calculated based on the actual width of the homepage and the containing layout component: `50%` (only integer percentages supported).
+    - You can use DP units to set a more specific width: `200dp` (supports integers and decimals).
+    - Because this attribute distinguishes units, you must include the unit, otherwise the attribute will not take effect.
+    - Examples:
+      ...button text="Button 1" width=50%
+      ...button text="Button 2" width=120dp
+- `weight`: Only available inside Row or Column, see the layout component sections below.
+
+> The button is a content component. If `width` or `weight` is not explicitly specified, its width is determined by the text length (limited by the container so it does not exceed the homepage).
 
 ---
 
 ### Horizontal Layout (`Row`)
-Lays out multiple components (currently only buttons and images) horizontally.  
+Lays out multiple components or layout components horizontally.  
 This component aligns with the Row component in Jetpack Compose.
 
 **Syntax:**
@@ -131,7 +143,7 @@ This component aligns with the Row component in Jetpack Compose.
 - **Child attribute `weight`**:
     - This attribute can only be used inside a Row component, used to allocate width to child components.
     - You can specify a weight value (supports integers and decimals), and the child's width will be allocated according to the actual width of the homepage.
-    - If you add the `noFill` configuration, the component will take the width corresponding to that weight, but it will not actually fill the allocated area.
+    - If you add the `noFill` configuration, the component will take the width corresponding to that weight, but it will not actually fill the allocated area (e.g., a button may still keep its content width).
     - The value of this attribute has no unit; it only represents a proportion.
       - Examples:
 ...row-start
@@ -142,6 +154,68 @@ This component aligns with the Row component in Jetpack Compose.
   ...button text="Button 1" weight=(1)
   ...button text="Button 2" weight=(1, noFill)
 ...row-end
+- `width`: The width of the layout component, optional, same as the button's width attribute; if this component is the root component, the default value is `100%`.
+
+> Row or Column cannot contain plain Markdown text; only buttons, images, or nested Row/Column components are allowed.
+
+---
+
+### Vertical Layout (`Column`)
+Lays out multiple components or layout components vertically.  
+This component aligns with the Column component in Jetpack Compose.
+
+**Syntax:**
+...column-start vertical=spacedBy(8) horizontal=Center
+    ...button text="Button 1"
+    ...button text="Button 2"
+...column-end
+
+**Parameter description:**
+- `vertical`: Vertical arrangement parameters.
+    - Available arrangements: `Top`, `Center`, `Bottom`, `SpaceEvenly`, `SpaceBetween`, `SpaceAround`.
+    - You can use `spacedBy` to control the distance between child items:
+        - Distance only: `spacedBy(12)` (supports integers and decimals).
+        - Control both distance and vertical alignment: `spacedBy(12, Top)`. Only the values `Top`, `Center`, `Bottom` are supported here.
+        - The unit for this attribute can only be `dp`, so you do NOT need to include the unit; otherwise the attribute will not take effect.
+    - Example:
+...column-start vertical=spacedBy(8)
+  ...button text="Button 1"
+  ...button text="Button 2"
+...column-end
+- `horizontal`: Horizontal alignment.
+    - Available alignments: `Start`, `Center` (or the more semantic `CenterHorizontally`), `End`.
+    - Example of horizontal centering:
+...column-start horizontal=Center
+  ...button text="Centered button"
+  ...image url="https://www.gstatic.com/images/branding/googlelogo/svg/googlelogo_clr_74x24px.svg" width=30%
+...column-end
+- `width`: The width of the layout component, optional, same as the button's width attribute; if this component is the root component, the default value is `100%`.
+
+> Same as Row, Column cannot contain plain Markdown text.
+> Column does not support the `weight` attribute on child components.
+
+---
+
+### Layout Nesting
+`Row` and `Column` components support nesting within each other. You can achieve complex interface layouts through nesting.
+
+**Example:**
+...card-start title="Nesting Example"
+    ...column-start vertical=spacedBy(8)
+        ...row-start horizontal=spacedBy(8)
+            ...button text="Button 1" weight=(1)
+            ...button text="Button 2" weight=(1)
+        ...row-end
+        ...image url="https://picsum.photos/400/100" width=100% shape=8dp
+    ...column-end
+    ...row-start horizontal=spacedBy(8)
+        ...button text="Button 3" weight=(1)
+        ...column-start weight=(1)
+            ...button text="Button 4" width=100%
+            ...button text="Button 5" width=100%
+        ...column-end
+    ...row-end
+...card-end
 
 ---
 
@@ -154,19 +228,23 @@ We can use the advanced image component to solve this problem.
 
 **Parameter description:**
 - `url`: Image link, required.
-- `width`: Width of the image, optional.
-    - You can use a percentage width, calculated based on the actual width of the homepage: `50%` (only integer percentages supported).
-    - You can use DP units to set a more specific width: `200dp` (supports integers and decimals).
-    - Because this attribute distinguishes units, you must include the unit, otherwise the attribute will not take effect.
-    - Examples:
+- `width`: Width of the image, optional, same as the button width attribute.
+- Example:
 ...image url="https://picsum.photos/500" width=50%
 ...image url="https://picsum.photos/600" width=120dp
 - `shape`: Corner radius of the image, same as the shape parameter for cards.
-- `weight`: Weight, only available inside a Row component. If `weight` is set, `width` will be completely ignored.
+- `weight`: Weight, only available inside Row or Column. If `weight` is set, `width` will be completely ignored.
+
+> The image is a content component. If `width` or `weight` is not explicitly specified, its width is the original image width (limited by the container so it does not exceed the homepage).
+
+---
 
 ## Important Notes
-- Cards cannot be nested; otherwise the inner card will be treated as plain text.
-- Tags must appear in pairs: `...card-start` with `...card-end`, `...row-start` with `...row-end`.
+- **Component nesting**:
+    - `Row` and `Column` support unlimited nesting within each other.
+    - `Card` cannot be nested; otherwise the inner card will be treated as plain text.
+    - `Row`/`Column` cannot directly contain plain Markdown text; only buttons, images, or nested layout components are allowed.
+- Tags must appear in pairs, e.g., `...card-start` must be paired with `...card-end`.
 - Extension components cannot be embedded inside standard Markdown containers: extension components are relatively independent and not fully integrated into Markdown syntax. For example, you cannot put `...image` inside a Markdown code block or table.
 - Image loading depends on network; ensure the image link is accessible.
 

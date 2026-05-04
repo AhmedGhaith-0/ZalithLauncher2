@@ -59,6 +59,7 @@ contentPadding=(12, 8)
 contentPadding=(4, 4, 12, 12)
 ...card-end
 
+> 卡片组件不支持 `width` 和 `weight` 属性，其宽度始终跟随主页宽度
 
 ---
 
@@ -86,11 +87,22 @@ contentPadding=(4, 4, 12, 12)
     - `check_update`: 触发启动器检查更新
     - `launch_game`: 启动当前选中的版本
     - `copy{...}`: 复制指定内容
+    - 更多事件请参考启动器的实际支持列表
+- `width`: 按钮的宽度，可选
+    - 可使用百分比宽度，会根据主页的实际宽度、所在布局组件的宽度计算：`50%`，仅支持整数百分比
+    - 可使用 DP 单位来设置更具体的宽度：`200dp`，支持整数、小数
+    - 由于该属性的数值是区分单位的，所以必须带上单位，否则该属性不生效
+    - 示例：
+      ...button text="按钮1" width=50%
+      ...button text="按钮2" width=120dp
+- `weight`: 仅在 Row 或 Column 内部可用，见下方布局组件的说明
+
+> 按钮属于内容组件，若未显式指定 `width` 或 `weight`，其宽度由文字长度决定（受容器限制不会超出主页）
 
 ---
 
 ### 横向布局 (`Row`)
-将多个组件（目前仅限按钮和图片）横向排版  
+将多个组件或布局组件横向排版  
 这个组件对齐的是 Jetpack Compose 中的 Row 组件
 
 **语法：**
@@ -131,7 +143,7 @@ contentPadding=(4, 4, 12, 12)
 - **子项属性 `weight`**:
     - 这是仅在 Row 组件内部可使用的属性，用于分配子组件的宽度
     - 可填写具体的权重值，将会根据主页的实际宽度为子组件分配宽度，支持整数、小数
-    - 若添加 `noFill` 配置，则会使组件占有该权重的宽度，但组件并不会真的填满该区域
+    - 若添加 `noFill` 配置，则会使组件占有该权重的宽度，但组件并不会真的填满该区域（例如按钮可能仍然保持内容宽度）
     - 该属性的数值没有单位，仅表示比例
       - 示例：
 ...row-start
@@ -142,31 +154,97 @@ contentPadding=(4, 4, 12, 12)
   ...button text="按钮1" weight=(1)
   ...button text="按钮2" weight=(1, noFill)
 ...row-end
+- `width`: 布局组件的宽度，可选，与按钮的属性一致；若该组件是根组件，则默认值为 `100%`
+
+> Row 或 Column 内部不能包含普通 Markdown 文本，只能放置按钮、图片、或嵌套的 Row/Column 组件
+
+---
+
+### 纵向布局 (`Column`)
+将多个组件或布局组件纵向排版  
+这个组件对齐的是 Jetpack Compose 中的 Column 组件
+
+**语法：**
+...column-start vertical=spacedBy(8) horizontal=Center
+    ...button text="按钮1"
+    ...button text="按钮2"
+...column-end
+
+**参数说明：**
+- `vertical`: 垂直排列参数
+    - 可使用的排列方式：`Top`, `Center`, `Bottom`, `SpaceEvenly`, `SpaceBetween`, `SpaceAround`
+    - 可使用 `spacedBy` 控制子项之间的距离：
+        - 仅控制距离：`spacedBy(12)`，支持整数、小数
+        - 控制距离的同时，控制垂直排列方式：`spacedBy(12, Top)`，此处仅支持使用值：`Top`, `Center`, `Bottom`
+        - 该属性的数值的单位只能是 `dp`，所以此处无需带上单位，否则该属性不生效
+    - 示例：
+...column-start vertical=spacedBy(8)
+  ...button text="按钮1"
+  ...button text="按钮2"
+...column-end
+- `horizontal`: 水平对齐
+    - 可使用的对齐方式：`Start`, `Center` (或更符合语义的 `CenterHorizontally`), `End`
+    - 水平居中示例：
+...column-start horizontal=Center
+  ...button text="居中按钮"
+  ...image url="https://www.baidu.com/img/flexible/logo/pc/result.png" width=30%
+...column-end
+- `width`: 布局组件的宽度，可选，与按钮的属性一致；若该组件是根组件，则默认值为 `100%`
+
+> 与 Row 相同，Column 内部不能包含普通 Markdown 文本
+> Column 不支持对子组件使用 `weight` 属性
+
+---
+
+### 布局嵌套
+`Row` 与 `Column` 组件支持互相嵌套，你可以通过嵌套来实现复杂的界面布局
+
+**示例：**
+...card-start title="嵌套示例"
+    ...column-start vertical=spacedBy(8)
+        ...row-start horizontal=spacedBy(8)
+            ...button text="按钮1" weight=(1)
+            ...button text="按钮2" weight=(1)
+        ...row-end
+        ...image url="https://picsum.photos/400/100" width=100% shape=8dp
+    ...column-end
+    ...row-start horizontal=spacedBy(8)
+        ...button text="按钮3" weight=(1)
+        ...column-start weight=(1)
+            ...button text="按钮4" width=100%
+            ...button text="按钮5" width=100%
+        ...column-end
+    ...row-end
+...card-end
 
 ---
 
 ### 图片组件
 虽然 Markdown 已经包括了定义图片的语法，但它可操作性太小，例如无法调整位置、宽度等  
-我们可以使用高级卡片组件来解决这个痛点
+我们可以使用高级图片组件来解决这个痛点
 
 **语法：**
 ...image url="https://picsum.photos/400" width=40% shape=12dp
 
 **参数说明：**
 - `url`: 图片链接，必填
-- `width`: 图片的宽度，可选
-    - 可使用百分比宽度，会根据主页的实际宽度计算：`50%`，仅支持整数百分比
-    - 可使用 DP 单位来设置更具体的宽度：`200dp`，支持整数、小数
-    - 由于该属性的数值是区分单位的，所以必须带上单位，否则该属性不生效
-    - 示例：
+- `width`: 图片的宽度，可选，与按钮宽度属性一致，
+- 示例：
 ...image url="https://picsum.photos/500" width=50%
 ...image url="https://picsum.photos/600" width=120dp
 - `shape`: 图片的圆角大小，与卡片的形状参数一致
-- `weight`: 权重，仅在 Row 组件内部可用，且配置 `weight` 后，`width` 会被完全忽略
+- `weight`: 权重，仅在 Row 或 Column 内部可用，且配置 `weight` 后，`width` 会被完全忽略
+
+> 图片属于内容组件，若未显式指定 `width` 或 `weight`，其宽度为图片原始宽度（受容器限制不会超出主页）
+
+---
 
 ## 注意事项
-- 卡片禁止嵌套，否则内部卡片会被当作普通文本
-- 标签必须成对出现：`...card-start` 与 `...card-end`、`...row-start` 与 `...row-end` 必须配对
+- **组件嵌套**:
+    - `Row` 与 `Column` 支持无限互相嵌套
+    - `Card` 禁止嵌套，否则内部卡片会被当作普通文本
+    - `Row`/`Column` 内部不能直接写普通 Markdown 文本，只能放置按钮、图片或嵌套的布局组件
+- 标签必须成对出现，如 `...card-start` 与 `...card-end` 必须配对
 - 扩展组件不能嵌入标准 Markdown 容器：扩展组件相对独立，并没有彻底融入 Markdown 语法，例如无法将 `...image` 写在 Markdown 的代码块或表格内部
 - 图片加载依赖网络，请确保图片链接可访问
 
