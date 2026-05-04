@@ -151,9 +151,12 @@ class HomePageViewModel : ViewModel() {
         val localUuid = url0.toUuid().toString().replace("-", "")
         val localFile = File(PathManager.DIR_CACHE_HOME_PAGE, localUuid)
 
+        //使用特定的文件来记录缓存时间
+        val timeFile = File(PathManager.DIR_CACHE_HOME_PAGE, "$localUuid.time")
+
         runCatching {
-            if (!force && localFile.exists()) {
-                val localTime = localFile.lastModified()
+            if (!force && localFile.exists() && timeFile.exists()) {
+                val localTime = timeFile.readText().toLongOrNull() ?: 0L
                 val currentTime = System.currentTimeMillis()
                 if (currentTime - localTime <= TimeUnit.MINUTES.toMillis(30L)) {
                     //若时间未超过半小时，则不刷新缓存
@@ -167,6 +170,8 @@ class HomePageViewModel : ViewModel() {
             //缓存主页文件
             runCatching {
                 localFile.writeText(content)
+                //同步记录当前的系统时间到时间标识文件
+                timeFile.writeText(System.currentTimeMillis().toString())
             }.onFailure { e ->
                 lWarning("Failed to cache to local file!", e)
             }
