@@ -24,6 +24,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
@@ -111,7 +113,8 @@ fun UpgradeDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f, fill = false)
-                            .padding(horizontal = 20.dp),
+                            .padding(horizontal = 20.dp)
+                            .verticalScroll(rememberScrollState()),
                         content = markdownBody,
                         richTextStyle = defaultRichTextStyle(),
                     )

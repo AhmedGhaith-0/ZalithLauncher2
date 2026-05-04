@@ -85,26 +85,27 @@ fun defaultRichTextStyle(
         headingStyle = { level, textStyle ->
             when (level) {
                 0 -> TextStyle(
-                    fontSize = 36.sp,
+                    fontSize = 34.sp,
                     fontWeight = FontWeight.Bold
                 )
                 1 -> TextStyle(
-                    fontSize = 26.sp,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 )
                 2 -> TextStyle(
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-                3 -> TextStyle(
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                 )
-                4 -> TextStyle(
+                3 -> TextStyle(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                 )
+                4 -> TextStyle(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                )
                 5 -> TextStyle(
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                 )
                 else -> textStyle
