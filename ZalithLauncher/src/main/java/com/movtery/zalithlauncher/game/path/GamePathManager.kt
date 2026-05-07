@@ -59,7 +59,7 @@ object GamePathManager {
     /**
      * 当前用户路径
      */
-    fun getUserHome(): String = File(_currentPath.value).parentFile!!.absolutePath
+    fun getUserHome(): String = File(_currentPath.value).absolutePath
 
     private lateinit var database: AppDatabase
     private lateinit var gamePathDao: GamePathDao

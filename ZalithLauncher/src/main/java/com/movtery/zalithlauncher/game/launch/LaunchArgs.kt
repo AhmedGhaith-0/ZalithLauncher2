@@ -34,6 +34,7 @@ import com.movtery.zalithlauncher.game.version.download.filterLibrary
 import com.movtery.zalithlauncher.game.version.download.getLibraryReplacement
 import com.movtery.zalithlauncher.game.version.installed.Version
 import com.movtery.zalithlauncher.game.version.installed.VersionInfo
+import com.movtery.zalithlauncher.game.version.installed.VersionsManager
 import com.movtery.zalithlauncher.game.version.installed.getGameManifest
 import com.movtery.zalithlauncher.game.versioninfo.models.GameManifest
 import com.movtery.zalithlauncher.info.InfoDistributor
@@ -63,6 +64,12 @@ class LaunchArgs(
     private val readAssetsFile: (path: String) -> String,
     private val getCacioJavaArgs: (isJava8: Boolean) -> List<String>
 ) {
+    //fix: 一些定制端需要依赖原版客户端
+    val clientJar = gameManifest.inheritsFrom?.let { inheritsFrom ->
+        //FIXME: 依赖的是一个原版ID的版本，但这个版本可能是用户自行安装的，只是版本名称与ID一致，不保证客户端真的是对应版本
+        VersionsManager.getVersion(inheritsFrom)?.getClientJar()
+    } ?: version.getClientJar()
+
     fun getAllArgs(): List<String> {
         val argsList: MutableList<String> = ArrayList()
 
@@ -206,7 +213,9 @@ class LaunchArgs(
             }
         }
         argsList.add("-Dlog4j.configurationFile=${configFilePath.absolutePath}")
-        argsList.add("-Dminecraft.client.jar=${version.getClientJar().absolutePath}")
+        argsList.add("-Dminecraft.client.jar=${clientJar.absolutePath}")
+        argsList.add("-Dminecraft.launcher.brand=${InfoDistributor.LAUNCHER_NAME}")
+        argsList.add("-Dminecraft.launcher.version=${BuildConfig.VERSION_NAME}")
 
         return argsList
     }
@@ -271,11 +280,7 @@ class LaunchArgs(
      */
     private fun generateLaunchClassPath(gameManifest: GameManifest): String {
         val classpathList = mutableListOf<String>()
-
         val classpath: Array<String> = generateLibClasspath(gameManifest)
-
-        val clientClass = version.getClientJar()
-        val clientClasspath: String = clientClass.absolutePath
 
         for (jarFile in classpath) {
             val jarFileObj = File(jarFile)
@@ -285,8 +290,8 @@ class LaunchArgs(
             }
             classpathList.add(jarFile)
         }
-        if (clientClass.exists()) {
-            classpathList.add(clientClasspath)
+        if (clientJar.exists()) {
+            classpathList.add(clientJar.absolutePath)
         }
 
         return classpathList.joinToString(":")
@@ -341,7 +346,7 @@ class LaunchArgs(
         varArgMap["game_directory"] = gameDirPath.absolutePath
         varArgMap["user_properties"] = "{}"
         varArgMap["user_type"] = "msa"
-        varArgMap["version_name"] = version.getVersionInfo()!!.minecraftVersion
+        varArgMap["version_name"] = gameManifest.id
 
         setLauncherInfo(varArgMap)
 

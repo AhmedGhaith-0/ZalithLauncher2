@@ -36,9 +36,7 @@ fun getGameManifest(version: Version): GameManifest {
  */
 fun getGameManifest(version: Version, skipInheriting: Boolean): GameManifest {
     var gameManifest = GSON.fromJson(File(version.getVersionPath(), "${version.getVersionName()}.json").readText(), GameManifest::class.java)
-    if (skipInheriting || version.getVersionInfo()?.loaderInfo == null) {
-        processLibraries { gameManifest.libraries }
-    } else if (gameManifest.inheritsFrom != null) {
+    if (!skipInheriting && gameManifest.inheritsFrom != null) {
         val inheritsManifest = run {
             val inherits = gameManifest.inheritsFrom
             GSON.fromJson(File(version.getVersionsFolder()).child(inherits).child("${inherits}.json").readText(), GameManifest::class.java)
@@ -118,6 +116,8 @@ fun getGameManifest(version: Version, skipInheriting: Boolean): GameManifest {
         }
 
         gameManifest = inheritsManifest
+    } else {
+        processLibraries { gameManifest.libraries }
     }
 
     if (gameManifest.javaVersion?.majorVersion == 0) {
